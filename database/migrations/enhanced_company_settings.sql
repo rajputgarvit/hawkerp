@@ -1,0 +1,32 @@
+-- Enhanced Company Settings Migration
+-- Add new columns for advanced features
+
+ALTER TABLE company_settings
+ADD COLUMN IF NOT EXISTS financial_year_start INT DEFAULT 4 COMMENT 'Month number (1-12) when financial year starts',
+ADD COLUMN IF NOT EXISTS currency_code VARCHAR(10) DEFAULT 'INR',
+ADD COLUMN IF NOT EXISTS currency_symbol VARCHAR(10) DEFAULT '₹',
+ADD COLUMN IF NOT EXISTS date_format VARCHAR(20) DEFAULT 'd-m-Y',
+ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) DEFAULT 'Asia/Kolkata',
+ADD COLUMN IF NOT EXISTS invoice_prefix VARCHAR(20) DEFAULT 'INV',
+ADD COLUMN IF NOT EXISTS quotation_prefix VARCHAR(20) DEFAULT 'QT',
+ADD COLUMN IF NOT EXISTS invoice_footer TEXT COMMENT 'Footer text for invoices',
+ADD COLUMN IF NOT EXISTS company_registration_number VARCHAR(100),
+ADD COLUMN IF NOT EXISTS tax_registration_date DATE,
+ADD COLUMN IF NOT EXISTS linkedin_url VARCHAR(255),
+ADD COLUMN IF NOT EXISTS facebook_url VARCHAR(255),
+ADD COLUMN IF NOT EXISTS twitter_url VARCHAR(255),
+ADD COLUMN IF NOT EXISTS instagram_url VARCHAR(255),
+ADD COLUMN IF NOT EXISTS smtp_host VARCHAR(100),
+ADD COLUMN IF NOT EXISTS smtp_port INT DEFAULT 587,
+ADD COLUMN IF NOT EXISTS smtp_username VARCHAR(100),
+ADD COLUMN IF NOT EXISTS smtp_password VARCHAR(255),
+ADD COLUMN IF NOT EXISTS smtp_encryption VARCHAR(10) DEFAULT 'tls',
+ADD COLUMN IF NOT EXISTS email_from_name VARCHAR(100),
+ADD COLUMN IF NOT EXISTS email_from_address VARCHAR(100),
+ADD COLUMN IF NOT EXISTS enable_email_notifications BOOLEAN DEFAULT TRUE,
+ADD COLUMN IF NOT EXISTS invoice_due_days INT DEFAULT 30 COMMENT 'Default payment terms in days',
+ADD COLUMN IF NOT EXISTS low_stock_threshold INT DEFAULT 10,
+ADD COLUMN IF NOT EXISTS enable_multi_currency BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS enable_barcode BOOLEAN DEFAULT TRUE,
+ADD COLUMN IF NOT EXISTS backup_frequency VARCHAR(20) DEFAULT 'daily',
+ADD COLUMN IF NOT EXISTS last_backup_date DATETIME;

@@ -1,0 +1,62 @@
+-- Add company settings table
+CREATE TABLE IF NOT EXISTS company_settings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    company_name VARCHAR(200) NOT NULL,
+    address_line1 VARCHAR(200),
+    address_line2 VARCHAR(200),
+    city VARCHAR(100),
+    state VARCHAR(100),
+    country VARCHAR(100) DEFAULT 'India',
+    postal_code VARCHAR(20),
+    phone VARCHAR(20),
+    email VARCHAR(100),
+    website VARCHAR(100),
+    gstin VARCHAR(20),
+    pan VARCHAR(20),
+    bank_name VARCHAR(100),
+    bank_account_number VARCHAR(50),
+    bank_ifsc VARCHAR(20),
+    bank_branch VARCHAR(100),
+    bank_account_holder VARCHAR(200),
+    logo_path VARCHAR(255),
+    terms_conditions TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Insert default company settings
+INSERT INTO company_settings (
+    company_name, 
+    address_line1, 
+    city, 
+    state, 
+    country,
+    postal_code,
+    phone,
+    email,
+    gstin,
+    pan,
+    bank_name,
+    bank_account_number,
+    bank_ifsc,
+    bank_branch,
+    bank_account_holder,
+    terms_conditions
+) VALUES (
+    'Tiger ERP Solutions',
+    'Business Park, Sector 18',
+    'New Delhi',
+    'Delhi',
+    'India',
+    '110001',
+    '+91-11-12345678',
+    'info@tigererp.com',
+    '07XXXXX1234X1ZX',
+    'XXXXX1234X',
+    'ICICI Bank',
+    '102000000012789',
+    'ICIC0001234',
+    'Connaught Place',
+    'Tiger ERP Solutions',
+    'E & O.E\n1. Goods once sold will not be taken back.\n2. Interest @ 18% p.a. will be charged if the payment is not made within the stipulated time.\n3. Subject to local Jurisdiction only.'
+);
