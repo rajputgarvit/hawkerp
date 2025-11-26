@@ -66,8 +66,9 @@ window.onclick = function(event) {
     }
 }
 
-// Handle Quick Add Product Form Submission
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize function to set up event listeners
+function initializeInvoiceForm() {
+    // Handle Quick Add Product Form Submission
     const quickAddProductForm = document.getElementById('quickAddProductForm');
     if (quickAddProductForm) {
         quickAddProductForm.addEventListener('submit', function(e) {
@@ -181,7 +182,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize calculations
     calculateTotals();
-});
+}
+
+// Execute initialization immediately if DOM is ready, otherwise wait for DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeInvoiceForm);
+} else {
+    // DOM is already ready, execute immediately
+    initializeInvoiceForm();
+}
 
 window.addRow = function() {
     try {
