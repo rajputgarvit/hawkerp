@@ -34,10 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
+    $user = $auth->getCurrentUser();
+
     try {
         $productCode = $codeGen->generateProductCode();
         
         $data = [
+            'company_id' => $user['company_id'],
             'product_code' => $productCode,
             'name' => $input['name'],
             'category_id' => !empty($input['category_id']) ? $input['category_id'] : null,
@@ -49,7 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'reorder_level' => $input['reorder_level'] ?? 0,
             'standard_cost' => $input['standard_cost'] ?? 0,
             'selling_price' => $input['selling_price'],
-            'tax_rate' => $input['tax_rate'] ?? 0
+            'tax_rate' => $input['tax_rate'] ?? 0,
+            'has_serial_number' => !empty($input['has_serial_number']) ? 1 : 0,
+            'has_warranty' => !empty($input['has_warranty']) ? 1 : 0,
+            'has_expiry_date' => !empty($input['has_expiry_date']) ? 1 : 0
         ];
         
         $productId = $db->insert('products', $data);
@@ -62,7 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'name' => $data['name'],
                 'product_code' => $data['product_code'],
                 'selling_price' => $data['selling_price'],
-                'tax_rate' => $data['tax_rate']
+                'tax_rate' => $data['tax_rate'],
+                'has_serial_number' => $data['has_serial_number'],
+                'has_warranty' => $data['has_warranty'],
+                'has_expiry_date' => $data['has_expiry_date']
             ]
         ]);
         

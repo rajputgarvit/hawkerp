@@ -29,7 +29,14 @@ class CodeGenerator {
      * Format: PRD001, PRD002, etc.
      */
     public function generateProductCode() {
-        $lastCode = $this->db->fetchOne("SELECT product_code FROM products ORDER BY id DESC LIMIT 1");
+        // Find the highest numeric part in PRDxxx codes
+        $lastCode = $this->db->fetchOne("
+            SELECT product_code 
+            FROM products 
+            WHERE product_code REGEXP '^PRD[0-9]+$' 
+            ORDER BY CAST(SUBSTR(product_code, 4) AS UNSIGNED) DESC 
+            LIMIT 1
+        ");
         
         if (!$lastCode) {
             return 'PRD001';
@@ -200,5 +207,91 @@ class CodeGenerator {
         $newNumber = $number + 1;
         
         return 'WH' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * Generate next journal entry number
+     * Format: JE-20241123-001, JE-20241123-002, etc.
+     */
+    public function generateJournalEntryNumber() {
+        $date = date('Ymd');
+        $lastEntry = $this->db->fetchOne(
+            "SELECT entry_number FROM journal_entries WHERE entry_number LIKE ? ORDER BY id DESC LIMIT 1",
+            ["JE-$date-%"]
+        );
+        
+        if (!$lastEntry) {
+            return "JE-$date-001";
+        }
+        
+        $parts = explode('-', $lastEntry['entry_number']);
+        $number = (int) end($parts);
+        $newNumber = $number + 1;
+        
+        return "JE-$date-" . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * Generate account code based on account type
+     * Format: 1000 (Assets), 2000 (Liabilities), 3000 (Equity), 4000 (Income), 5000 (Expense)
+     */
+    public function generateAccountCode($accountTypeCategory) {
+        // Determine prefix based on category
+        $prefixMap = [
+            'Asset' => '1',
+            'Liability' => '2',
+            'Equity' => '3',
+            'Income' => '4',
+            'Expense' => '5'
+        ];
+        
+        $prefix = $prefixMap[$accountTypeCategory] ?? '9';
+        
+        // Get last account code with this prefix
+        $lastAccount = $this->db->fetchOne(
+            "SELECT account_code FROM chart_of_accounts WHERE account_code LIKE ? ORDER BY account_code DESC LIMIT 1",
+            ["$prefix%"]
+        );
+        
+        if (!$lastAccount) {
+            return $prefix . '000';
+        }
+        
+        $number = (int) $lastAccount['account_code'];
+        $newNumber = $number + 1;
+        
+        return (string) $newNumber;
+    }
+    
+    /**
+     * Generate fiscal year name
+     * Format: FY 2024-25, FY 2025-26, etc.
+     */
+    public function generateFiscalYearName($startDate) {
+        $startYear = date('Y', strtotime($startDate));
+        $endYear = $startYear + 1;
+        $endYearShort = substr($endYear, 2);
+        
+        return "FY $startYear-$endYearShort";
+    }
+    
+    /**
+     * Generate next purchase bill number
+     * Format: PB-001, PB-002, etc.
+     */
+    public function generatePurchaseBillNumber() {
+        $lastBill = $this->db->fetchOne(
+            "SELECT bill_number FROM purchase_invoices ORDER BY id DESC LIMIT 1"
+        );
+        
+        if (!$lastBill) {
+            return 'PB-001';
+        }
+        
+        $parts = explode('-', $lastBill['bill_number']);
+        $number = (int) end($parts);
+        $newNumber = $number + 1;
+        
+        return 'PB-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
     }
 }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+    <select id="testSelect">
+        <option value="1" data-has-serial="1">Test 1</option>
+        <option value="0" data-has-serial="0">Test 0</option>
+        <option value="empty" data-has-serial="">Test Empty</option>
+    </select>
+    <div id="result"></div>
+    <script>
+        const select = document.getElementById('testSelect');
+        const result = document.getElementById('result');
+
+        function check(option) {
+            const val = option.dataset.hasSerial;
+            const isTrue = val == 1;
+            console.log(`Value: "${val}", Type: ${typeof val}, == 1: ${isTrue}`);
+            return `Value: "${val}", == 1: ${isTrue}`;
+        }
+
+        // Check HTML attributes
+        let output = "HTML Attributes:<br>";
+        output += "Option 1: " + check(select.options[0]) + "<br>";
+        output += "Option 0: " + check(select.options[1]) + "<br>";
+        output += "Option Empty: " + check(select.options[2]) + "<br>";
+
+        // Check JS assignment
+        const opt = document.createElement('option');
+        opt.dataset.hasSerial = 1;
+        output += "<br>JS Assignment (int 1): " + check(opt) + "<br>";
+
+        const opt2 = document.createElement('option');
+        opt2.dataset.hasSerial = "1";
+        output += "JS Assignment (string '1'): " + check(opt2) + "<br>";
+
+        result.innerHTML = output;
+    </script>
+</body>
+
+</html>

@@ -54,11 +54,20 @@ class Auth {
     
     public function getCurrentUser() {
         if ($this->isLoggedIn()) {
+            // If company_id is missing in session (stale session), refresh it from DB
+            if (!isset($_SESSION['company_id'])) {
+                $user = $this->db->fetchOne("SELECT company_id FROM users WHERE id = ?", [$_SESSION['user_id']]);
+                if ($user) {
+                    $_SESSION['company_id'] = $user['company_id'];
+                }
+            }
+
             return [
                 'id' => $_SESSION['user_id'],
                 'username' => $_SESSION['username'],
                 'full_name' => $_SESSION['full_name'],
                 'email' => $_SESSION['email'],
+                'company_id' => $_SESSION['company_id'] ?? null,
                 'roles' => $_SESSION['roles'] ?? []
             ];
         }
@@ -69,6 +78,10 @@ class Auth {
         if (!$this->isLoggedIn()) return false;
         $roles = explode(',', $_SESSION['roles'] ?? '');
         return in_array($role, $roles) || in_array('Super Admin', $roles);
+    }
+
+    public function isAdmin() {
+        return $this->hasRole('Super Admin');
     }
     
     public function hasPermission($module, $action) {
@@ -88,12 +101,34 @@ class Auth {
         
         return $result['count'] > 0;
     }
+
+    public function hasModuleAccess($module) {
+        if (!$this->isLoggedIn()) return false;
+
+        // Super Admin has access to everything
+        if ($this->hasRole('Super Admin')) return true;
+
+        // Company Admin (Role ID 2) has access to everything
+        // We can check role name 'Admin' or ID 2. Let's check role name for clarity if possible, 
+        // but roles are stored as comma separated string in session or we can query.
+        // For now, let's assume if they have 'Admin' role they see everything.
+        if ($this->hasRole('Admin')) return true;
+
+        // Check specific module access
+        $access = $this->db->fetchOne(
+            "SELECT id FROM user_module_access WHERE user_id = ? AND module = ?",
+            [$_SESSION['user_id'], $module]
+        );
+
+        return $access ? true : false;
+    }
     
     private function setSession($user) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['full_name'] = $user['full_name'];
         $_SESSION['email'] = $user['email'];
+        $_SESSION['company_id'] = $user['company_id'];
         $_SESSION['roles'] = $user['roles'];
     }
     
@@ -108,17 +143,32 @@ class Auth {
             return ['success' => false, 'message' => 'Username or email already exists'];
         }
         
+        // Create new company (using company_settings table)
+        $companyId = $this->db->insert('company_settings', [
+            'company_name' => $data['company_name'],
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        if (!$companyId) {
+            return ['success' => false, 'message' => 'Failed to create company'];
+        }
+
         // Hash password
         $data['password_hash'] = password_hash($data['password'], PASSWORD_DEFAULT);
         unset($data['password']);
         
+        // Add company_id to user data
+        $data['company_id'] = $companyId;
+        
         // Insert user
         $userId = $this->db->insert('users', $data);
         
-        // Assign default role (Employee)
+        // Assign default role (Admin for the new company creator)
+        // Assuming role_id 2 is Admin (need to verify, but usually 1=Super Admin, 2=Admin, 4=Employee)
+        // Let's use 2 (Admin) for the company creator
         $this->db->insert('user_roles', [
             'user_id' => $userId,
-            'role_id' => 4 // Employee role
+            'role_id' => 2 // Admin role
         ]);
         
         return ['success' => true, 'user_id' => $userId];
@@ -160,4 +210,138 @@ class Auth {
             exit;
         }
     }
+    
+    /**
+     * Send email verification
+     */
+    public function sendVerificationEmail($userId, $email) {
+        // Generate verification token
+        $token = bin2hex(random_bytes(32));
+        
+        // Update user with token
+        $this->db->update('users',
+            ['email_verification_token' => $token],
+            'id = ?',
+            [$userId]
+        );
+        
+        // Send email (simplified version - should use proper email service)
+        $verificationLink = BASE_URL . "verify-email.php?token=" . $token;
+        $subject = "Verify your HawkERP account";
+        $message = "Click the link to verify your email: " . $verificationLink;
+        
+        // In production, use proper email service
+        // For now, just return the link
+        return ['success' => true, 'link' => $verificationLink];
+    }
+    
+    /**
+     * Verify email token
+     */
+    public function verifyEmail($token) {
+        $user = $this->db->fetchOne(
+            "SELECT id FROM users WHERE email_verification_token = ?",
+            [$token]
+        );
+        
+        if (!$user) {
+            return ['success' => false, 'message' => 'Invalid verification token'];
+        }
+        
+        $this->db->update('users',
+            [
+                'email_verified' => 1,
+                'email_verification_token' => null
+            ],
+            'id = ?',
+            [$user['id']]
+        );
+        
+        return ['success' => true, 'user_id' => $user['id']];
+    }
+    
+    /**
+     * Check if user has active subscription
+     */
+    public function checkSubscriptionAccess() {
+        if (!$this->isLoggedIn()) {
+            return false;
+        }
+        
+        require_once 'Subscription.php';
+        $subscription = new Subscription();
+        return $subscription->hasActiveSubscription($_SESSION['user_id']);
+    }
+    /**
+     * Impersonate a user (Admin only)
+     */
+    public function impersonateUser($userId) {
+        if (!$this->isAdmin()) {
+            return false;
+        }
+
+        $targetUser = $this->db->fetchOne("SELECT * FROM users WHERE id = ?", [$userId]);
+        if (!$targetUser) {
+            return false;
+        }
+
+        // Save original admin session
+        $_SESSION['admin_user_id'] = $_SESSION['user_id'];
+        $_SESSION['admin_username'] = $_SESSION['username'];
+        $_SESSION['admin_full_name'] = $_SESSION['full_name'];
+        $_SESSION['admin_roles'] = $_SESSION['roles'];
+        $_SESSION['is_impersonating'] = true;
+
+        // Log audit
+        $this->logAudit($_SESSION['user_id'], 'impersonate_start', 'users', $userId);
+
+        // Set session to target user
+        $this->setSession($targetUser);
+        
+        // Fetch roles for target user
+        $roles = $this->db->fetchAll(
+            "SELECT r.name FROM roles r 
+             JOIN user_roles ur ON r.id = ur.role_id 
+             WHERE ur.user_id = ?", 
+            [$userId]
+        );
+        $_SESSION['roles'] = implode(',', array_column($roles, 'name'));
+
+        return true;
+    }
+
+    /**
+     * Stop impersonation and return to admin
+     */
+    public function stopImpersonation() {
+        if (!isset($_SESSION['is_impersonating']) || !$_SESSION['is_impersonating']) {
+            return false;
+        }
+
+        $adminId = $_SESSION['admin_user_id'];
+
+        // Log audit
+        $this->logAudit($adminId, 'impersonate_end', 'users', $_SESSION['user_id']);
+
+        // Restore admin session
+        $_SESSION['user_id'] = $_SESSION['admin_user_id'];
+        $_SESSION['username'] = $_SESSION['admin_username'];
+        $_SESSION['full_name'] = $_SESSION['admin_full_name'];
+        $_SESSION['roles'] = $_SESSION['admin_roles'];
+        
+        // Clear impersonation flags
+        unset($_SESSION['admin_user_id']);
+        unset($_SESSION['admin_username']);
+        unset($_SESSION['admin_full_name']);
+        unset($_SESSION['admin_roles']);
+        unset($_SESSION['is_impersonating']);
+        unset($_SESSION['company_id']); // Will be reset on next admin action or not needed for global admin
+
+        return true;
+    }
+
+    public function isImpersonating() {
+        return isset($_SESSION['is_impersonating']) && $_SESSION['is_impersonating'];
+    }
 }
+

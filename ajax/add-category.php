@@ -32,8 +32,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     
+    $user = $auth->getCurrentUser();
+
     try {
         $data = [
+            'company_id' => $user['company_id'],
             'name' => $input['name'],
             'description' => $input['description'] ?? '',
             'is_active' => 1
