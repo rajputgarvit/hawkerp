@@ -197,6 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View/Edit Invoice - <?php echo APP_NAME; ?></title>
     <link rel="stylesheet" href="../../../public/assets/css/style.css">
+    <script src="../../../public/assets/js/modules/sales/invoices.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -786,7 +787,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <script>
         window.invoiceId = <?php echo $invoiceId; ?>;
     </script>
-    <script src="../../../public/assets/js/modules/sales/invoices.js"></script>
 </div> <!-- End of content-area -->
 </body>
 </html>

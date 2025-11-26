@@ -90,6 +90,15 @@ $amountInWords = 'Rupees ' . trim(numberToWords(intval($quotation['total_amount'
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quotation - <?php echo $quotation['quotation_number']; ?></title>
+     <!-- jQuery CDN (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        // Pass PHP data to JS
+        window.productsData = <?php echo json_encode($products); ?>;
+    </script>
+    <script src="../../../public/assets/js/modules/sales/quotations.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         @page {

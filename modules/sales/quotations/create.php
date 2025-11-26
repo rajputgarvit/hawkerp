@@ -110,10 +110,18 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Quotation - <?php echo APP_NAME; ?></title>
+     <!-- jQuery CDN (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        // Pass PHP data to JS
+        window.productsData = <?php echo json_encode($products); ?>;
+    </script>
+    <script src="../../../public/assets/js/modules/sales/quotations.js"></script>
     <link rel="stylesheet" href="../../../public/assets/css/style.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         /* Select2 Customization */
         .select2-container .select2-selection--single {
@@ -897,16 +905,6 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
             </form>
         </div>
     </div>
-
-    <!-- jQuery CDN (required for Select2) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        // Pass PHP data to JS
-        window.productsData = <?php echo json_encode($products); ?>;
-    </script>
-    <script src="../../../public/assets/js/modules/sales/quotations.js"></script>
     </div>
 </body>
 </html>
