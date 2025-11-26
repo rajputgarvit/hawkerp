@@ -8,7 +8,7 @@ define('DB_NAME', 'garviterp-353034391dd2');
 // Application Configuration
 define('APP_NAME', 'Hawk ERP');
 define('APP_VERSION', '1.0.0');
-define('BASE_URL', 'https://garvitrajput.co.in/');
+define('BASE_URL', 'http://localhost/hawkerp/');
 define('MODULES_URL', BASE_URL . 'modules');
 
 // Session Configuration

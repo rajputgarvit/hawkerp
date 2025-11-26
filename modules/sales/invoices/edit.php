@@ -784,33 +784,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </div>
     
     <script>
-        function checkSerialAvailability(input, invoiceId) {
-            const serialNumber = input.value.trim();
-            if (!serialNumber) return;
-            
-            fetch('../../../ajax/check-serial.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    serial_number: serialNumber,
-                    exclude_invoice_id: invoiceId
-                })
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success && result.exists) {
-                    alert(result.message);
-                    input.value = ''; // Clear the invalid input
-                    input.focus();
-                }
-            })
-            .catch(error => {
-                console.error('Error checking serial number:', error);
-            });
-        }
+        window.invoiceId = <?php echo $invoiceId; ?>;
     </script>
+    <script src="../../../public/assets/js/modules/sales/invoices.js"></script>
 </div> <!-- End of content-area -->
 </body>
 </html>
