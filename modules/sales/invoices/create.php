@@ -778,16 +778,16 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                                                 </div>
                                             </td>
                                             <td>
-                                                <input type="number" name="items[0][quantity]" class="item-quantity" value="1" step="1" min="0" onchange="calculateRow(0)" required>
+                                                <input type="number" name="items[0][quantity]" class="item-quantity" value="1" step="1" min="0" onchange="calculateRow(this)" required>
                                             </td>
                                             <td>
-                                                <input type="number" name="items[0][unit_price]" class="item-price" value="0" step="0.01" min="0" onchange="calculateRow(0)" required>
+                                                <input type="number" name="items[0][unit_price]" class="item-price" value="0" step="0.01" min="0" onchange="calculateRow(this)" required>
                                             </td>
                                             <td>
-                                                <input type="number" name="items[0][discount_percent]" class="item-discount" value="0" step="0.01" min="0" max="100" onchange="calculateRow(0)">
+                                                <input type="number" name="items[0][discount_percent]" class="item-discount" value="0" step="0.01" min="0" max="100" onchange="calculateRow(this)">
                                             </td>
                                             <td>
-                                                <input type="number" name="items[0][tax_rate]" class="item-tax" value="0" step="0.01" min="0" onchange="calculateRow(0)">
+                                                <input type="number" name="items[0][tax_rate]" class="item-tax" value="0" step="0.01" min="0" onchange="calculateRow(this)">
                                             </td>
                                             <td>
                                                 <input type="number" class="item-total" value="0" step="0.01" readonly>
@@ -851,9 +851,7 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                         </div>
                     </form>
                 </div>
-            </div>
-        </main>
-    </div>
+
     <!-- Quick Add Product Modal -->
     <div id="quickAddProductModal" class="modal">
         <div class="modal-content">
@@ -1177,13 +1175,12 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                 
                 // Update handlers for calculation inputs
                 newRow.querySelectorAll('.item-quantity, .item-price, .item-discount').forEach(input => {
-                    input.setAttribute('onchange', `calculateRow(${rowIndex})`);
+                    input.setAttribute('onchange', `calculateRow(this)`);
                 });
                 
                 // Update handler for tax select specifically
-                const taxSelect = newRow.querySelector('.item-tax');
                 if (taxSelect) {
-                    taxSelect.setAttribute('onchange', `calculateRow(${rowIndex})`);
+                    taxSelect.setAttribute('onchange', `calculateRow(this)`);
                 }
                 
                 // Add handler for serial number check
@@ -1279,38 +1276,12 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                     else expiryInput.removeAttribute('required');
                 }
                 
-                calculateRow(index);
+                calculateRow(select);
             }
         }
         
-        window.calculateRow = function(index) {
-            const rows = document.querySelectorAll('.item-row');
-            // Find row by index is risky if rows are removed. Better to find by element if possible.
-            // But here we rely on index passed. 
-            // Wait, if rows are removed, index might be wrong?
-            // Yes. But let's stick to the current logic for now, or improve it.
-            // Actually, calculateRow is called with index.
-            // If I remove row 1, row 2 becomes row 1.
-            // But the onchange handler still says calculateRow(2).
-            // This is a bug in the original code!
-            
-            // Let's fix this by finding the row based on the element that triggered it?
-            // But calculateRow is called from inline handler.
-            
-            // For now, let's just use the row that contains the element if we can.
-            // But we don't have the element here.
-            
-            // Re-implement calculateRow to accept element OR index?
-            // Or just find the row by index?
-            // If rows are removed, indices are messed up.
-            
-            // Let's assume the user won't delete rows in the middle and break it for now.
-            // Or better: update addRow to pass `this` to calculateRow?
-            // That requires changing HTML generation.
-            
-            // Let's just fix the scope issue first.
-            
-            const row = rows[index];
+        window.calculateRow = function(element) {
+            const row = element.closest('tr');
             if (!row) return; // Safety check
             
             const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
@@ -1411,6 +1382,8 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
             calculateTotals();
         });
     </script>
-</div> <!-- End of content-area -->
+    </div> <!-- End of content-area -->
+    </main>
+</div> <!-- End of dashboard-wrapper -->
 </body>
 </html>
