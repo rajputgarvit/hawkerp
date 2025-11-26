@@ -174,6 +174,7 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../../../public/assets/js/modules/sales/invoices.js"></script>
     <style>
         /* Professional Invoice Layout */
         :root {
@@ -981,7 +982,6 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
         // Pass PHP data to JS
         window.productsData = <?php echo json_encode($products); ?>;
     </script>
-    <script src="../../../public/assets/js/modules/sales/invoices.js"></script>
     </div> <!-- End of content-area -->
     </main>
 </div> <!-- End of dashboard-wrapper -->
