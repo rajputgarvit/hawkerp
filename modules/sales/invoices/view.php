@@ -199,61 +199,60 @@ $amountInWords = 'Rupees ' . trim(numberToWords(intval($invoice['total_amount'])
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice - <?php echo $invoice['invoice_number']; ?></title>
-        <script src="../../../public/assets/js/modules/sales/invoices.js"></script>
-
+    <title>Invoice - <?php echo $invoice['invoice_number']; ?> - <?php echo APP_NAME; ?></title>
+    <link rel="stylesheet" href="../../../public/assets/css/style.css">
+    <script src="../../../public/assets/js/modules/sales/invoices.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @page {
             size: A4;
             margin: 10mm;
         }
-        body {
+        
+        .invoice-box {
+            max-width: 210mm;
+            margin: auto;
+            background: #fff;
             font-family: 'Inter', sans-serif;
             font-size: 10pt;
             line-height: 1.3;
             color: #000;
-            background: #fff;
-            margin: 0;
-            padding: 20px;
         }
-        .invoice-box {
-            max-width: 210mm;
-            margin: auto;
-        }
-        table {
+        .invoice-box table {
             width: 100%;
             border-collapse: collapse;
         }
-        th, td {
+        .invoice-box th, 
+        .invoice-box td {
             border: 1px solid #000;
             padding: 6px 8px;
             vertical-align: top;
         }
-        .no-border {
+        .invoice-box .no-border {
             border: none !important;
         }
-        .header-table td {
+        .invoice-box .header-table td {
             border: none;
         }
-        .title {
+        .invoice-box .title {
             font-size: 24pt;
             font-weight: bold;
             text-transform: uppercase;
             text-align: right;
             color: #000;
         }
-        .company-name {
+        .invoice-box .company-name {
             font-size: 16pt;
             font-weight: bold;
             text-transform: uppercase;
         }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .text-bold { font-weight: bold; }
-        .bg-gray { background-color: #f0f0f0; }
+        .invoice-box .text-right { text-align: right; }
+        .invoice-box .text-center { text-align: center; }
+        .invoice-box .text-bold { font-weight: bold; }
+        .invoice-box .bg-gray { background-color: #f0f0f0; }
         
-        .section-header {
+        .invoice-box .section-header {
             background-color: #e0e0e0;
             font-weight: bold;
             text-transform: uppercase;
@@ -265,32 +264,60 @@ $amountInWords = 'Rupees ' . trim(numberToWords(intval($invoice['total_amount'])
             text-align: center;
             margin-bottom: 20px;
         }
-        .btn {
+        .print-actions .btn {
             padding: 10px 20px;
-            background: #000;
+            background: var(--primary-color, #000);
             color: #fff;
             text-decoration: none;
             border-radius: 4px;
             display: inline-block;
             margin: 0 5px;
             font-weight: 500;
+            border: none;
+            cursor: pointer;
         }
-        .btn:hover { background: #333; }
+        .print-actions .btn:hover { 
+            opacity: 0.9;
+        }
         
         @media print {
-            .print-actions { display: none; }
-            body { padding: 0; }
-            
+            .dashboard-wrapper .sidebar,
+            .top-header,
+            .print-actions { 
+                display: none !important; 
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .content-area {
+                padding: 0 !important;
+            }
+            body { 
+                padding: 0;
+                background: #fff;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="print-actions">
-        <a href="#" onclick="window.print()" class="btn">Print Invoice</a>
-        <a href="index" class="btn">Back to Invoices</a>
-    </div>
+    <div class="dashboard-wrapper">
+        <?php include INCLUDES_PATH . '/sidebar.php'; ?>
+        
+        <main class="main-content">
+            <?php include INCLUDES_PATH . '/header.php'; ?>
+            
+            <div class="content-area">
+                <div class="print-actions">
+                    <button onclick="window.print()" class="btn">
+                        <i class="fas fa-print"></i> Print Invoice
+                    </button>
+                    <a href="index" class="btn">
+                        <i class="fas fa-arrow-left"></i> Back to Invoices
+                    </a>
+                </div>
 
-    <div class="invoice-box">
+                <div class="invoice-box">
         <!-- Header -->
         <table cellpadding="0" cellspacing="0">
             <tr>
@@ -322,14 +349,7 @@ $amountInWords = 'Rupees ' . trim(numberToWords(intval($invoice['total_amount'])
                                         <td class="text-bold bg-gray">Due Date:</td>
                                         <td><?php echo date('d-M-Y', strtotime($invoice['due_date'])); ?></td>
                                     </tr>
-                                    <tr>
-                                        <td class="text-bold bg-gray">Status:</td>
-                                        <td>
-                                            <span style="display: inline-block; padding: 4px 12px; background-color: <?php echo $statusBgColor; ?>; color: <?php echo $statusColor; ?>; font-weight: bold; border-radius: 4px; font-size: 9pt;">
-                                                <?php echo $paymentStatus; ?>
-                                            </span>
-                                        </td>
-                                    </tr>
+                                    
                                 </table>
                             </td>
                         </tr>
@@ -580,6 +600,9 @@ $amountInWords = 'Rupees ' . trim(numberToWords(intval($invoice['total_amount'])
                 </td>
             </tr>
         </table>
+    </div>
+            </div>
+        </main>
     </div>
 </body>
 </html>

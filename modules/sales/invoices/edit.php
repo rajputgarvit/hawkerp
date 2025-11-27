@@ -455,6 +455,143 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             color: var(--text-primary);
         }
 
+        /* Totals Section */
+        .totals-wrapper {
+            padding: 2rem;
+            background: var(--bg-light);
+            border-top: 2px solid var(--border-color);
+        }
+
+        .totals-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .notes-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notes-section label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+
+        .notes-section textarea {
+            padding: 0.875rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .notes-section textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .totals-section {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.875rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .total-row:last-child {
+            border-bottom: none;
+        }
+
+        .total-row label {
+            font-size: 0.9375rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .total-row span {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .total-row input {
+            width: 140px;
+            text-align: right;
+            padding: 0.625rem 0.875rem;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+        }
+
+        .total-row input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .grand-total-row {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 1.25rem 1.5rem;
+            margin: 1rem -1.5rem -1.5rem;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .grand-total-row label,
+        .grand-total-row span {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            padding: 1.5rem 2rem;
+            background: white;
+            border-top: 2px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Card Styling for Payment Section */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
         /* Utility Classes */
         .text-right { text-align: right; }
         .text-center { text-align: center; }
@@ -462,6 +599,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         /* Responsive */
         @media (max-width: 1024px) {
+            .totals-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .form-grid {
                 grid-template-columns: 1fr;
             }
