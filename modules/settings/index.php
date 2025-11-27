@@ -354,6 +354,9 @@ $payroll_components = $db->fetchAll("SELECT * FROM payroll_components ORDER BY d
                         <button class="tab active" onclick="switchTab('users')">
                             <i class="fas fa-users"></i> Users & Roles
                         </button>
+                        <button class="tab" onclick="switchTab('data-management')">
+                            <i class="fas fa-database"></i> Data Management
+                        </button>
                     </div>
                     
                     <div class="info-box" style="margin-bottom: 20px; background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px;">
@@ -403,10 +406,338 @@ $payroll_components = $db->fetchAll("SELECT * FROM payroll_components ORDER BY d
                             <?php endforeach; ?>
                         </div>
                     </div>
+                    
+                    <!-- Data Management Tab -->
+                    <div id="data-management" class="tab-content">
+                        <div class="alert" style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin-bottom: 20px;">
+                            <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                            <strong>Warning:</strong> Data deletion is permanent and cannot be undone. Please ensure you have a backup before proceeding.
+                        </div>
+                        
+                        <div class="card" style="background: white; padding: 30px; border-radius: 10px; border: 1px solid var(--border-color);">
+                            <h3 style="margin-bottom: 20px; color: var(--text-primary);">
+                                <i class="fas fa-trash-alt"></i> Delete Module Data
+                            </h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 30px;">
+                                Select the data categories you want to delete. This will permanently remove all records for the selected categories within your company.
+                            </p>
+                            
+                            <form id="deleteDataForm">
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                                    <!-- Sales Data -->
+                                    <div class="data-category-card">
+                                        <label style="display: flex; align-items: start; gap: 12px; cursor: pointer; padding: 20px; background: #f8fafc; border: 2px solid var(--border-color); border-radius: 10px; transition: all 0.2s;">
+                                            <input type="checkbox" name="categories[]" value="sales" style="margin-top: 4px; width: 18px; height: 18px;">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;">
+                                                    <i class="fas fa-shopping-cart" style="color: #3b82f6;"></i> Sales Data
+                                                </div>
+                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                                                    Invoices, Quotations, Sales Orders, Payments
+                                                </div>
+                                                <div style="font-size: 12px; color: #ef4444; font-weight: 600;">
+                                                    <i class="fas fa-exclamation-circle"></i> High Risk
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Purchase Data -->
+                                    <div class="data-category-card">
+                                        <label style="display: flex; align-items: start; gap: 12px; cursor: pointer; padding: 20px; background: #f8fafc; border: 2px solid var(--border-color); border-radius: 10px; transition: all 0.2s;">
+                                            <input type="checkbox" name="categories[]" value="purchases" style="margin-top: 4px; width: 18px; height: 18px;">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;">
+                                                    <i class="fas fa-file-invoice" style="color: #8b5cf6;"></i> Purchase Data
+                                                </div>
+                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                                                    Purchase Orders, Invoices, GRNs, Payments
+                                                </div>
+                                                <div style="font-size: 12px; color: #ef4444; font-weight: 600;">
+                                                    <i class="fas fa-exclamation-circle"></i> High Risk
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Products -->
+                                    <div class="data-category-card">
+                                        <label style="display: flex; align-items: start; gap: 12px; cursor: pointer; padding: 20px; background: #f8fafc; border: 2px solid var(--border-color); border-radius: 10px; transition: all 0.2s;">
+                                            <input type="checkbox" name="categories[]" value="products" style="margin-top: 4px; width: 18px; height: 18px;">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;">
+                                                    <i class="fas fa-box" style="color: #10b981;"></i> Product Data
+                                                </div>
+                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                                                    Products, Categories, Stock, BOMs
+                                                </div>
+                                                <div style="font-size: 12px; color: #dc2626; font-weight: 600;">
+                                                    <i class="fas fa-ban"></i> Critical
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Customers -->
+                                    <div class="data-category-card">
+                                        <label style="display: flex; align-items: start; gap: 12px; cursor: pointer; padding: 20px; background: #f8fafc; border: 2px solid var(--border-color); border-radius: 10px; transition: all 0.2s;">
+                                            <input type="checkbox" name="categories[]" value="customers" style="margin-top: 4px; width: 18px; height: 18px;">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;">
+                                                    <i class="fas fa-user-tie" style="color: #f59e0b;"></i> Customer Data
+                                                </div>
+                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                                                    Customers, Addresses, Notes
+                                                </div>
+                                                <div style="font-size: 12px; color: #ef4444; font-weight: 600;">
+                                                    <i class="fas fa-exclamation-circle"></i> High Risk
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Suppliers -->
+                                    <div class="data-category-card">
+                                        <label style="display: flex; align-items: start; gap: 12px; cursor: pointer; padding: 20px; background: #f8fafc; border: 2px solid var(--border-color); border-radius: 10px; transition: all 0.2s;">
+                                            <input type="checkbox" name="categories[]" value="suppliers" style="margin-top: 4px; width: 18px; height: 18px;">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;">
+                                                    <i class="fas fa-truck" style="color: #06b6d4;"></i> Supplier Data
+                                                </div>
+                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                                                    Suppliers, Addresses
+                                                </div>
+                                                <div style="font-size: 12px; color: #ef4444; font-weight: 600;">
+                                                    <i class="fas fa-exclamation-circle"></i> High Risk
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Accounting -->
+                                    <div class="data-category-card">
+                                        <label style="display: flex; align-items: start; gap: 12px; cursor: pointer; padding: 20px; background: #f8fafc; border: 2px solid var(--border-color); border-radius: 10px; transition: all 0.2s;">
+                                            <input type="checkbox" name="categories[]" value="accounting" style="margin-top: 4px; width: 18px; height: 18px;">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;">
+                                                    <i class="fas fa-calculator" style="color: #6366f1;"></i> Accounting Data
+                                                </div>
+                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                                                    Journal Entries, Payments, Transactions
+                                                </div>
+                                                <div style="font-size: 12px; color: #dc2626; font-weight: 600;">
+                                                    <i class="fas fa-ban"></i> Critical
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- HR Data -->
+                                    <div class="data-category-card">
+                                        <label style="display: flex; align-items: start; gap: 12px; cursor: pointer; padding: 20px; background: #f8fafc; border: 2px solid var(--border-color); border-radius: 10px; transition: all 0.2s;">
+                                            <input type="checkbox" name="categories[]" value="hr" style="margin-top: 4px; width: 18px; height: 18px;">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;">
+                                                    <i class="fas fa-users" style="color: #ec4899;"></i> HR Data
+                                                </div>
+                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                                                    Employees, Attendance, Payroll, Leaves
+                                                </div>
+                                                <div style="font-size: 12px; color: #ef4444; font-weight: 600;">
+                                                    <i class="fas fa-exclamation-circle"></i> High Risk
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- CRM Data -->
+                                    <div class="data-category-card">
+                                        <label style="display: flex; align-items: start; gap: 12px; cursor: pointer; padding: 20px; background: #f8fafc; border: 2px solid var(--border-color); border-radius: 10px; transition: all 0.2s;">
+                                            <input type="checkbox" name="categories[]" value="crm" style="margin-top: 4px; width: 18px; height: 18px;">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 5px;">
+                                                    <i class="fas fa-bullseye" style="color: #f97316;"></i> CRM Data
+                                                </div>
+                                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">
+                                                    Leads, Opportunities, Activities
+                                                </div>
+                                                <div style="font-size: 12px; color: #f59e0b; font-weight: 600;">
+                                                    <i class="fas fa-exclamation-triangle"></i> Medium Risk
+                                                </div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: flex; gap: 15px; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 2px solid var(--border-color);">
+                                    <div>
+                                        <button type="button" class="btn btn-sm" style="background: var(--border-color);" onclick="toggleAllCategories(true)">
+                                            <i class="fas fa-check-square"></i> Select All
+                                        </button>
+                                        <button type="button" class="btn btn-sm" style="background: var(--border-color); margin-left: 10px;" onclick="toggleAllCategories(false)">
+                                            <i class="fas fa-square"></i> Deselect All
+                                        </button>
+                                    </div>
+                                    <button type="button" class="btn" style="background: #ef4444; color: white; font-weight: 600;" onclick="confirmDataDeletion()">
+                                        <i class="fas fa-trash-alt"></i> Delete Selected Data
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header" style="background: #ef4444; color: white;">
+                <h2 style="color: white; margin: 0;"><i class="fas fa-exclamation-triangle"></i> Confirm Data Deletion</h2>
+                <button class="close-modal" onclick="closeModal('deleteConfirmModal')" style="color: white;">&times;</button>
+            </div>
+            <div style="padding: 30px;">
+                <div style="background: #fef2f2; border: 2px solid #ef4444; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                    <p style="font-weight: 600; color: #991b1b; margin-bottom: 10px;">
+                        <i class="fas fa-exclamation-circle"></i> This action cannot be undone!
+                    </p>
+                    <p style="color: #991b1b; margin: 0; font-size: 14px;">
+                        You are about to permanently delete data from your system. Please ensure you have a backup before proceeding.
+                    </p>
+                </div>
+                
+                <div id="selectedCategoriesList" style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--text-primary);">
+                        <input type="checkbox" id="confirmCheckbox" style="width: 18px; height: 18px;">
+                        I understand this action is permanent and cannot be undone
+                    </label>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn" style="background: var(--border-color);" onclick="closeModal('deleteConfirmModal')">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="button" class="btn" style="background: #ef4444; color: white;" onclick="executeDataDeletion()" id="confirmDeleteBtn" disabled>
+                        <i class="fas fa-trash-alt"></i> Yes, Delete Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Toggle all category checkboxes
+        function toggleAllCategories(select) {
+            const checkboxes = document.querySelectorAll('input[name="categories[]"]');
+            checkboxes.forEach(cb => cb.checked = select);
+        }
+        
+        // Show confirmation modal
+        function confirmDataDeletion() {
+            const checkboxes = document.querySelectorAll('input[name="categories[]"]:checked');
+            
+            if (checkboxes.length === 0) {
+                alert('Please select at least one category to delete.');
+                return;
+            }
+            
+            // Build list of selected categories
+            let categoriesList = '<h4 style="margin-bottom: 10px; color: var(--text-primary);">Selected Categories:</h4><ul style="margin: 0; padding-left: 20px;">';
+            checkboxes.forEach(cb => {
+                const label = cb.closest('label').querySelector('div > div').textContent.trim();
+                categoriesList += `<li style="margin-bottom: 5px; color: var(--text-secondary);">${label}</li>`;
+            });
+            categoriesList += '</ul>';
+            
+            document.getElementById('selectedCategoriesList').innerHTML = categoriesList;
+            document.getElementById('confirmCheckbox').checked = false;
+            document.getElementById('confirmDeleteBtn').disabled = true;
+            
+            openModal('deleteConfirmModal');
+        }
+        
+        // Enable delete button when checkbox is checked
+        document.addEventListener('DOMContentLoaded', function() {
+            const confirmCheckbox = document.getElementById('confirmCheckbox');
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            
+            if (confirmCheckbox) {
+                confirmCheckbox.addEventListener('change', function() {
+                    confirmBtn.disabled = !this.checked;
+                });
+            }
+        });
+        
+        // Execute data deletion
+        function executeDataDeletion() {
+            const checkboxes = document.querySelectorAll('input[name="categories[]"]:checked');
+            const categories = Array.from(checkboxes).map(cb => cb.value);
+            
+            if (!document.getElementById('confirmCheckbox').checked) {
+                alert('Please confirm that you understand this action is permanent.');
+                return;
+            }
+            
+            // Show loading state
+            const btn = document.getElementById('confirmDeleteBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+            
+            // Send deletion request
+            const formData = new FormData();
+            categories.forEach(cat => formData.append('categories[]', cat));
+            
+            fetch('delete-data.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    closeModal('deleteConfirmModal');
+                    
+                    // Show success message with details
+                    let message = 'Data deleted successfully!\n\n';
+                    for (const [category, count] of Object.entries(data.deleted)) {
+                        message += `${category}: ${count} records\n`;
+                    }
+                    alert(message);
+                    
+                    // Uncheck all checkboxes
+                    toggleAllCategories(false);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error deleting data: ' + error.message);
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-trash-alt"></i> Yes, Delete Data';
+            });
+        }
+        
+        // Add hover effect to category cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.data-category-card label');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.borderColor = 'var(--primary-color)';
+                    this.style.background = '#eff6ff';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.borderColor = 'var(--border-color)';
+                    this.style.background = '#f8fafc';
+                });
+            });
+        });
+    </script>
     
     <!-- Modals -->
     

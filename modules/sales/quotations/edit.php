@@ -89,7 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'quantity' => $quantity,
                         'unit_price' => $unitPrice,
                         'discount_percent' => $discountPercent,
-                        'tax_rate' => $taxRate
+                        'tax_rate' => $taxRate,
+                        'company_id' => $user['company_id']
                     ]);
                 }
             }
