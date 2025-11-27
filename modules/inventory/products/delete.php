@@ -29,9 +29,9 @@ if (!$product) {
 // Check if product has been sold (used in invoices or sales orders)
 $usageCount = $db->fetchOne("
     SELECT 
-        (SELECT COUNT(*) FROM invoice_items WHERE product_id = ? AND company_id = ?) +
-        (SELECT COUNT(*) FROM sales_order_items WHERE product_id = ? AND company_id = ?) as total_usage
-", [$productId, $companyId, $productId, $companyId]);
+        (SELECT COUNT(*) FROM invoice_items ii INNER JOIN invoices i ON ii.invoice_id = i.id WHERE ii.product_id = ?) +
+        (SELECT COUNT(*) FROM sales_order_items soi INNER JOIN sales_orders so ON soi.order_id = so.id WHERE soi.product_id = ?) as total_usage
+", [$productId, $productId]);
 
 $isAjax = isset($_GET['ajax']) && $_GET['ajax'] === '1';
 

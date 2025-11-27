@@ -60,6 +60,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $productId = $db->insert('products', $data);
         
+        // Handle Default Warehouse (IN_HOUSE) and Stock (100)
+        $warehouseName = 'IN_HOUSE';
+        $warehouseCode = 'IN_HOUSE';
+        
+        // Check if warehouse exists
+        $warehouse = $db->fetchOne("SELECT id FROM warehouses WHERE company_id = ? AND code = ?", [$user['company_id'], $warehouseCode]);
+        
+        if ($warehouse) {
+            $warehouseId = $warehouse['id'];
+        } else {
+            // Create warehouse
+            $warehouseId = $db->insert('warehouses', [
+                'company_id' => $user['company_id'],
+                'name' => $warehouseName,
+                'code' => $warehouseCode,
+                'is_active' => 1
+            ]);
+        }
+        
+        // Add initial stock
+        if ($warehouseId) {
+            $db->insert('stock_balance', [
+                'company_id' => $user['company_id'],
+                'product_id' => $productId,
+                'warehouse_id' => $warehouseId,
+                'quantity' => 100,
+                'reserved_quantity' => 0
+            ]);
+            
+            // Also log this initial stock transaction
+            $db->insert('stock_transactions', [
+                'company_id' => $user['company_id'],
+                'product_id' => $productId,
+                'warehouse_id' => $warehouseId,
+                'transaction_type' => 'IN',
+                'quantity' => 100,
+                'reference_type' => 'Opening Stock',
+                'reference_id' => 0,
+                'notes' => 'Initial stock from Quick Add'
+            ]);
+        }
+        
         echo json_encode([
             'success' => true, 
             'message' => 'Product added successfully',

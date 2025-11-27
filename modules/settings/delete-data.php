@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+// Disable error display to prevent HTML output in JSON response
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
 require_once '../../config/config.php';
 require_once '../../classes/Auth.php';
 require_once '../../classes/Database.php';
@@ -286,8 +291,11 @@ try {
         'deleted' => $deletedCounts
     ]);
     
-} catch (Exception $e) {
-    $db->rollback();
+} catch (Throwable $e) {
+    if ($db->getConnection()->inTransaction()) {
+        $db->rollback();
+    }
+    error_log("Data deletion error: " . $e->getMessage() . "\n" . $e->getTraceAsString());
     echo json_encode([
         'success' => false,
         'message' => 'Error deleting data: ' . $e->getMessage()
