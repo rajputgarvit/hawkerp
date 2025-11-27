@@ -88,11 +88,11 @@ $products = $db->fetchAll("
                                             <td>₹<?php echo number_format($product['selling_price'], 2); ?></td>
                                             <td><?php echo number_format($product['reorder_level'], 2); ?></td>
                                             <td>
-                                                <a href="edit.php?id=<?php echo $product['id']; ?>" class="btn btn-sm" style="background: var(--primary-color); color: white;" title="Edit">
-                                                    <i class="fas fa-edit"></i>
+                                                <a href="edit.php?id=<?php echo $product['id']; ?>" class="btn-icon edit" title="Edit Product">
+                                                    <i class="fas fa-pen"></i>
                                                 </a>
-                                                <button class="btn btn-sm" style="background: var(--danger-color); color: white;" onclick="return deleteProduct(<?php echo $product['id']; ?>, this);" title="Delete">
-                                                    <i class="fas fa-trash"></i>
+                                                <button class="btn-icon delete" onclick="return deleteProduct(<?php echo $product['id']; ?>, this);" title="Delete Product">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </button>
                                             </td>
                                         </tr>

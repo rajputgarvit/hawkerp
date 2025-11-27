@@ -16,7 +16,7 @@ if (!$isSpaRequest):
     <?php endif; ?>
     <div class="header-left" style="display: flex; align-items: center; gap: 15px;">
 
-        <h1><?php echo ucwords(str_replace(['-', '.php'], [' ', ''], basename($_SERVER['PHP_SELF']))); ?></h1>
+        <h1><?php echo ucwords(str_replace(['-', '_'], [' ', ' '], basename(dirname($_SERVER['PHP_SELF'])))); ?></h1>
     </div>
     <div class="header-right">
         <div class="user-menu">

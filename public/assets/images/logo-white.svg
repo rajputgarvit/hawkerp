@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100">
+  <!-- Icon: Stylized Hawk/Bird -->
+  <g transform="translate(20, 10)">
+    <!-- Main Wing/Body -->
+    <path d="M10,50 Q30,10 70,20 C60,30 50,40 60,60 L40,70 Z" fill="#FFFFFF" />
+    <!-- Secondary Wing/Feather -->
+    <path d="M15,55 Q35,25 65,35" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+    <!-- Head/Beak -->
+    <circle cx="70" cy="20" r="5" fill="#FFFFFF" />
+    <path d="M72,18 L80,22 L72,24 Z" fill="#FFFFFF" />
+    
+    <!-- Abstract Geometric Shapes (Data/Structure) -->
+    <rect x="55" y="55" width="10" height="10" rx="2" fill="#FFFFFF" opacity="0.8" />
+    <rect x="70" y="45" width="8" height="8" rx="1" fill="#FFFFFF" opacity="0.6" />
+    <rect x="45" y="65" width="6" height="6" rx="1" fill="#FFFFFF" opacity="0.4" />
+  </g>
+  
+  <!-- Text: Hawk ERP -->
+  <text x="110" y="65" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="48" fill="#FFFFFF">Hawk</text>
+  <text x="250" y="65" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="300" font-size="48" fill="#FFFFFF">ERP</text>
+</svg>

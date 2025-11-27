@@ -99,13 +99,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
                 
                 $fileExtension = strtolower(pathinfo($_FILES['company_logo']['name'], PATHINFO_EXTENSION));
-                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
                 
                 if (in_array($fileExtension, $allowedExtensions)) {
                     $fileName = 'logo_' . $user['company_id'] . '_' . time() . '.' . $fileExtension;
                     $uploadPath = $uploadDir . $fileName;
                     
                     if (move_uploaded_file($_FILES['company_logo']['tmp_name'], $uploadPath)) {
+                        
+                        // Process Logo if requested
+                        if (isset($_POST['process_logo']) && $_POST['process_logo'] == '1') {
+                            $processed = false;
+                            
+                            // Handle PNG/JPG
+                            if (in_array($fileExtension, ['jpg', 'jpeg', 'png'])) {
+                                $info = getimagesize($uploadPath);
+                                $mime = $info['mime'];
+                                $srcImg = null;
+                                
+                                if ($mime == 'image/jpeg') $srcImg = imagecreatefromjpeg($uploadPath);
+                                elseif ($mime == 'image/png') $srcImg = imagecreatefrompng($uploadPath);
+                                
+                                if ($srcImg) {
+                                    $width = imagesx($srcImg);
+                                    $height = imagesy($srcImg);
+                                    $newImg = imagecreatetruecolor($width, $height);
+                                    
+                                    imagealphablending($newImg, false);
+                                    imagesavealpha($newImg, true);
+                                    $transparent = imagecolorallocatealpha($newImg, 0, 0, 0, 127);
+                                    $white = imagecolorallocate($newImg, 255, 255, 255);
+                                    
+                                    imagefilledrectangle($newImg, 0, 0, $width, $height, $transparent);
+                                    
+                                    for ($x = 0; $x < $width; $x++) {
+                                        for ($y = 0; $y < $height; $y++) {
+                                            $rgb = imagecolorat($srcImg, $x, $y);
+                                            $r = ($rgb >> 16) & 0xFF;
+                                            $g = ($rgb >> 8) & 0xFF;
+                                            $b = ($rgb) & 0xFF;
+                                            $a = ($rgb >> 24) & 0x7F;
+                                            
+                                            // If pixel is white-ish, make transparent
+                                            if ($r > 240 && $g > 240 && $b > 240) {
+                                                imagesetpixel($newImg, $x, $y, $transparent);
+                                            } else {
+                                                // If not white, make it pure white
+                                                // Preserve original alpha if it was already transparent
+                                                if ($a == 127) {
+                                                    imagesetpixel($newImg, $x, $y, $transparent);
+                                                } else {
+                                                    imagesetpixel($newImg, $x, $y, $white);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Save as PNG
+                                    $newFileName = 'logo_' . $user['company_id'] . '_' . time() . '_white.png';
+                                    $newUploadPath = $uploadDir . $newFileName;
+                                    imagepng($newImg, $newUploadPath);
+                                    
+                                    imagedestroy($srcImg);
+                                    imagedestroy($newImg);
+                                    
+                                    // Remove original and update paths
+                                    unlink($uploadPath);
+                                    $fileName = $newFileName;
+                                    $uploadPath = $newUploadPath;
+                                }
+                            } 
+                            // Handle SVG
+                            elseif ($fileExtension == 'svg') {
+                                $svgContent = file_get_contents($uploadPath);
+                                // Replace fills and strokes with white
+                                $svgContent = preg_replace('/fill="#[0-9a-fA-F]{3,6}"/', 'fill="#FFFFFF"', $svgContent);
+                                $svgContent = preg_replace('/stroke="#[0-9a-fA-F]{3,6}"/', 'stroke="#FFFFFF"', $svgContent);
+                                // Also handle rgb()
+                                $svgContent = preg_replace('/fill="rgb\([^)]+\)"/', 'fill="#FFFFFF"', $svgContent);
+                                file_put_contents($uploadPath, $svgContent);
+                            }
+                        }
+
                         $data['logo_path'] = 'public/uploads/logos/' . $fileName;
                     }
                 }
@@ -488,11 +563,18 @@ if (!$companySettings) {
                                 <label>Company Logo</label>
                                 <?php if (!empty($companySettings['logo_path'])): ?>
                                     <div style="margin-bottom: 10px;">
-                                        <img src="../../<?php echo htmlspecialchars($companySettings['logo_path']); ?>" alt="Current Logo" style="max-height: 50px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;">
+                                        <img src="../../<?php echo htmlspecialchars($companySettings['logo_path']); ?>" alt="Current Logo" style="max-height: 60px; max-width: 200px; width: auto; height: auto; border: 1px solid #ddd; padding: 5px; border-radius: 4px;">
                                     </div>
                                 <?php endif; ?>
                                 <input type="file" name="company_logo" class="form-control" accept="image/*">
-                                <small style="color: var(--text-secondary);">Upload a PNG or JPG file (Max 2MB). Recommended height: 40px.</small>
+                                <small style="color: var(--text-secondary);">Upload a PNG, JPG, or SVG file (Max 2MB). Recommended height: 40px.</small>
+                                <div style="margin-top: 10px;">
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                        <input type="checkbox" name="process_logo" value="1">
+                                        <span style="font-size: 0.9rem;">Convert to White Logo (Transparent Background)</span>
+                                    </label>
+                                    <small style="color: var(--text-secondary); display: block; margin-top: 2px;">Removes white background and makes the logo white (useful for dark themes).</small>
+                                </div>
                             </div>
                         </div>
                     </div>

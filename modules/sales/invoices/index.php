@@ -100,11 +100,16 @@ $invoices = $db->fetchAll("
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="edit?id=<?php echo $invoice['id']; ?>" class="btn btn-sm" style="background: var(--primary-color); color: white;" title="View/Edit Invoice">
-                                                    <i class="fas fa-eye"></i>
+                                                <a href="view.php?id=<?php echo $invoice['id']; ?>" class="btn-icon view" title="View Invoice">
+                                                    <i class="fas fa-file-alt"></i>
                                                 </a>
-                                                <a href="view?id=<?php echo $invoice['id']; ?>" target="_blank" class="btn btn-sm" style="background: var(--secondary-color); color: white;" title="Print Invoice">
-                                                    <i class="fas fa-print"></i>
+                                                <?php if ($invoice['status'] == 'Draft'): ?>
+                                                    <a href="edit.php?id=<?php echo $invoice['id']; ?>" class="btn-icon edit" title="Edit Invoice">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="delete.php?id=<?php echo $invoice['id']; ?>" class="btn-icon delete" title="Delete Invoice" onclick="return confirm('Are you sure you want to delete this invoice?');">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </a>
                                             </td>
                                         </tr>

@@ -111,11 +111,16 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price FROM pro
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="edit.php?id=<?php echo $order['id']; ?>" class="btn btn-sm" style="background: var(--primary-color); color: white;" title="View/Edit Order">
-                                                    <i class="fas fa-eye"></i>
+                                                <a href="view.php?id=<?php echo $order['id']; ?>" class="btn-icon view" title="View Order">
+                                                    <i class="fas fa-file-alt"></i>
                                                 </a>
-                                                <a href="view.php?id=<?php echo $order['id']; ?>" target="_blank" class="btn btn-sm" style="background: var(--secondary-color); color: white;" title="Print Order">
-                                                    <i class="fas fa-print"></i>
+                                                <?php if ($order['status'] == 'Draft'): ?>
+                                                    <a href="edit.php?id=<?php echo $order['id']; ?>" class="btn-icon edit" title="Edit Order">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="delete.php?id=<?php echo $order['id']; ?>" class="btn-icon delete" title="Delete Order" onclick="return confirm('Are you sure you want to delete this order?');">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </a>
                                             </td>
                                         </tr>

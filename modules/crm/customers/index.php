@@ -113,8 +113,14 @@ $customers = $db->fetchAll("
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="details.php?id=<?php echo $customer['id']; ?>" class="btn btn-sm" style="background: var(--primary-color); color: white;">
-                                                    <i class="fas fa-eye"></i> View
+                                                <a href="details.php?id=<?php echo $customer['id']; ?>" class="btn-icon view" title="View Details">
+                                                    <i class="fas fa-file-alt"></i>
+                                                </a>
+                                                <a href="edit.php?id=<?php echo $customer['id']; ?>" class="btn-icon edit" title="Edit Customer">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                                <a href="delete.php?id=<?php echo $customer['id']; ?>" class="btn-icon delete" title="Delete Customer" onclick="return confirm('Are you sure you want to delete this customer?');">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </a>
                                             </td>
                                         </tr>

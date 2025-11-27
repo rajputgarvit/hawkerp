@@ -104,11 +104,16 @@ $purchases = $db->fetchAll("
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="edit.php?id=<?php echo $purchase['id']; ?>" class="btn btn-sm" style="background: var(--primary-color); color: white;" title="Edit">
-                                                    <i class="fas fa-edit"></i>
+                                                <a href="view.php?id=<?php echo $purchase['id']; ?>" class="btn-icon view" title="View Purchase">
+                                                    <i class="fas fa-file-alt"></i>
                                                 </a>
-                                                <a href="view.php?id=<?php echo $purchase['id']; ?>" class="btn btn-sm" style="background: var(--secondary-color); color: white;" title="Print" target="_blank">
-                                                    <i class="fas fa-print"></i>
+                                                <?php if ($purchase['status'] == 'Draft' || $purchase['status'] == 'Submitted'): ?>
+                                                    <a href="edit.php?id=<?php echo $purchase['id']; ?>" class="btn-icon edit" title="Edit Purchase">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="delete.php?id=<?php echo $purchase['id']; ?>" class="btn-icon delete" title="Delete Purchase" onclick="return confirm('Are you sure you want to delete this purchase invoice?');">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </a>
                                             </td>
                                         </tr>

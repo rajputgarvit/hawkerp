@@ -88,9 +88,17 @@ $orders = $db->fetchAll("
                                                 </span>
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm" style="background: var(--primary-color); color: white;">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
+                                                <a href="view.php?id=<?php echo $order['id']; ?>" class="btn-icon view" title="View Order">
+                                                    <i class="fas fa-file-alt"></i>
+                                                </a>
+                                                <?php if ($order['status'] == 'Draft'): ?>
+                                                    <a href="edit.php?id=<?php echo $order['id']; ?>" class="btn-icon edit" title="Edit Order">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="delete.php?id=<?php echo $order['id']; ?>" class="btn-icon delete" title="Delete Order" onclick="return confirm('Are you sure you want to delete this order?');">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

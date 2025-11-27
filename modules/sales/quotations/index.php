@@ -113,11 +113,16 @@ $quotations = $db->fetchAll("
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="edit.php?id=<?php echo $quote['id']; ?>" class="btn btn-sm" style="background: var(--primary-color); color: white;" title="View/Edit Quotation">
-                                                    <i class="fas fa-eye"></i>
+                                                <a href="view.php?id=<?php echo $quote['id']; ?>" class="btn-icon view" title="View Quotation">
+                                                    <i class="fas fa-file-alt"></i>
                                                 </a>
-                                                <a href="view.php?id=<?php echo $quote['id']; ?>" class="btn btn-sm" style="background: var(--secondary-color); color: white;" title="Print Quotation" target="_blank">
-                                                    <i class="fas fa-print"></i>
+                                                <?php if ($quote['status'] == 'Draft'): ?>
+                                                    <a href="edit.php?id=<?php echo $quote['id']; ?>" class="btn-icon edit" title="Edit Quotation">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="delete.php?id=<?php echo $quote['id']; ?>" class="btn-icon delete" title="Delete Quotation" onclick="return confirm('Are you sure you want to delete this quotation?');">
+                                                    <i class="fas fa-trash-alt"></i>
                                                 </a>
                                             </td>
                                         </tr>
