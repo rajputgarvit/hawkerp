@@ -160,6 +160,42 @@ if (!$companySettings) {
     <link rel="stylesheet" href="../../public/assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <script>
+        function switchSettingsTab(event, tabId) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.settings-tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding content
+            // Handle case where event.currentTarget might be null if called programmatically
+            const button = event.currentTarget || document.querySelector(`button[onclick*="'${tabId}'"]`);
+            if (button) button.classList.add('active');
+            
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Handle HTML5 validation for hidden tabs
+        document.querySelector('form').addEventListener('invalid', function(e) {
+            const target = e.target;
+            const tabContent = target.closest('.settings-tab-content');
+            
+            if (tabContent && !tabContent.classList.contains('active')) {
+                // Prevent default browser error bubble which might look weird or not show
+                // e.preventDefault(); 
+                
+                const tabId = tabContent.id;
+                const tabButton = document.querySelector(`button[onclick*="'${tabId}'"]`);
+                
+                // Switch to the tab
+                switchSettingsTab({currentTarget: tabButton}, tabId);
+                
+                // Focus the input after a short delay to allow tab switch
+                setTimeout(() => {
+                    target.focus();
+                }, 100);
+            }
+        }, true); // Use capture phase to catch 'invalid' event which doesn't bubble
+    </script>
     <style>
         .settings-tabs {
             display: flex;
@@ -680,42 +716,5 @@ if (!$companySettings) {
             </div>
         </main>
     </div>
-    
-    <script>
-        function switchSettingsTab(event, tabId) {
-            // Remove active class from all tabs and contents
-            document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.settings-tab-content').forEach(content => content.classList.remove('active'));
-            
-            // Add active class to clicked tab and corresponding content
-            // Handle case where event.currentTarget might be null if called programmatically
-            const button = event.currentTarget || document.querySelector(`button[onclick*="'${tabId}'"]`);
-            if (button) button.classList.add('active');
-            
-            document.getElementById(tabId).classList.add('active');
-        }
-
-        // Handle HTML5 validation for hidden tabs
-        document.querySelector('form').addEventListener('invalid', function(e) {
-            const target = e.target;
-            const tabContent = target.closest('.settings-tab-content');
-            
-            if (tabContent && !tabContent.classList.contains('active')) {
-                // Prevent default browser error bubble which might look weird or not show
-                // e.preventDefault(); 
-                
-                const tabId = tabContent.id;
-                const tabButton = document.querySelector(`button[onclick*="'${tabId}'"]`);
-                
-                // Switch to the tab
-                switchSettingsTab({currentTarget: tabButton}, tabId);
-                
-                // Focus the input after a short delay to allow tab switch
-                setTimeout(() => {
-                    target.focus();
-                }, 100);
-            }
-        }, true); // Use capture phase to catch 'invalid' event which doesn't bubble
-    </script>
 </body>
 </html>
