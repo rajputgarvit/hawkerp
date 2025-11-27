@@ -502,14 +502,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             background: white;
             border: 2px solid var(--border-color);
             border-radius: 12px;
-            padding: 1.5rem;
+            overflow: hidden;
         }
 
         .total-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.875rem 0;
+            padding: 1rem 1.5rem;
             border-bottom: 1px solid #f1f5f9;
         }
 
@@ -524,9 +524,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
         .total-row span {
-            font-size: 1rem;
+            font-size: 1.0625rem;
             font-weight: 600;
             color: var(--text-primary);
+            font-family: 'Inter', monospace;
         }
 
         .total-row input {
@@ -548,14 +549,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         .grand-total-row {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
-            padding: 1.25rem 1.5rem;
-            margin: 1rem -1.5rem -1.5rem;
-            border-radius: 0 0 10px 10px;
+            padding: 1.25rem 1.5rem !important;
+            margin-top: 0.5rem;
+            border-top: 3px solid var(--primary-color);
         }
 
         .grand-total-row label,
         .grand-total-row span {
-            color: white;
+            color: white !important;
             font-size: 1.25rem;
             font-weight: 700;
         }
