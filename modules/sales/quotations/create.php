@@ -71,8 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     'quantity' => $quantity,
                     'unit_price' => $unitPrice,
                     'discount_percent' => $discountPercent,
-                    'tax_rate' => $taxRate,
-                    'company_id' => $user['company_id']
+                    'tax_rate' => $taxRate
                 ]);
             }
         }
@@ -102,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 // Get customers and products for dropdowns
 $customers = $db->fetchAll("SELECT id, customer_code, company_name FROM customers WHERE is_active = 1 AND company_id = ? ORDER BY company_name", [$user['company_id']]);
-$products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rate, hsn_code FROM products WHERE is_active = 1 AND company_id = ? ORDER BY name", [$user['company_id']]);
+$products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rate, hsn_code, has_serial_number, has_warranty, has_expiry_date FROM products WHERE is_active = 1 AND company_id = ? ORDER BY name", [$user['company_id']]);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -110,18 +109,25 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Quotation - <?php echo APP_NAME; ?></title>
-     <!-- jQuery CDN (required for Select2) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script>
-        // Pass PHP data to JS
-        window.productsData = <?php echo json_encode($products); ?>;
-    </script>
-    <script src="../../../public/assets/js/modules/sales/quotations.js"></script>
-    <link rel="stylesheet" href="../../../public/assets/css/style.css?v=<?php echo time(); ?>">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../../../public/assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- JavaScript Files - Load in correct order -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <!-- Pass PHP data to JavaScript -->
+    <script>
+        window.productsData = <?php echo json_encode($products); ?>;
+    </script>
+    
+    <!-- Custom quotations JavaScript -->
+    <script src="../../../public/assets/js/modules/sales/quotations.js"></script>
+    
     <style>
         /* Select2 Customization */
         .select2-container .select2-selection--single {
@@ -345,6 +351,28 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
 
         .items-table input[type="number"] {
             text-align: right;
+        }
+
+        /* Column Widths */
+        .col-product { width: 28%; }
+        .col-desc { width: 18%; }
+        .col-tracking { width: 16%; }
+        .col-qty { width: 8%; }
+        .col-price { width: 10%; }
+        .col-disc { width: 8%; }
+        .col-tax { width: 8%; }
+        .col-total { width: 10%; }
+        .col-action { width: 4%; }
+
+        /* Tracking Info */
+        .tracking-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+        }
+
+        .tracking-info input {
+            font-size: 0.8125rem !important;
         }
 
         /* Action Buttons */
@@ -647,9 +675,14 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                     <!-- Header -->
                     <div class="invoice-header">
                         <h2><i class="fas fa-file-invoice"></i> Create New Quotation</h2>
-                        <a href="index.php" class="btn" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">
-                            <i class="fas fa-times"></i> Cancel
-                        </a>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" form="quotationForm" class="btn" style="background: white; color: var(--primary-color); font-weight: bold;">
+                                <i class="fas fa-save"></i> Create Quotation
+                            </button>
+                            <a href="index.php" class="btn" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                                <i class="fas fa-times"></i> Close
+                            </a>
+                        </div>
                     </div>
                     
                     <form method="POST" id="quotationForm">
@@ -697,14 +730,15 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                                 <table class="items-table" id="itemsTable">
                                     <thead>
                                         <tr>
-                                            <th style="width: 30%;">Product</th>
-                                            <th style="width: 20%;">Description</th>
-                                            <th style="width: 8%;">Qty</th>
-                                            <th style="width: 10%;">Price</th>
-                                            <th style="width: 8%;">Disc %</th>
-                                            <th style="width: 8%;">Tax %</th>
-                                            <th style="width: 10%;">Total</th>
-                                            <th style="width: 6%;"></th>
+                                            <th class="col-product">Product</th>
+                                            <th class="col-desc">Description</th>
+                                            <th class="col-tracking">Tracking Info</th>
+                                            <th class="col-qty">Qty</th>
+                                            <th class="col-price">Unit Price</th>
+                                            <th class="col-disc">Disc %</th>
+                                            <th class="col-tax">Tax %</th>
+                                            <th class="col-total">Total</th>
+                                            <th class="col-action"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="itemsBody">
@@ -717,7 +751,10 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                                                             <option value="<?php echo $product['id']; ?>" 
                                                                     data-price="<?php echo $product['selling_price']; ?>"
                                                                     data-tax="<?php echo $product['tax_rate']; ?>"
-                                                                    data-name="<?php echo htmlspecialchars($product['name']); ?>">
+                                                                    data-name="<?php echo htmlspecialchars($product['name']); ?>"
+                                                                    data-has-serial="<?php echo $product['has_serial_number'] ?? 0; ?>"
+                                                                    data-has-warranty="<?php echo $product['has_warranty'] ?? 0; ?>"
+                                                                    data-has-expiry="<?php echo $product['has_expiry_date'] ?? 0; ?>">
                                                                 <?php echo htmlspecialchars($product['product_code'] . ' - ' . $product['name']); ?>
                                                             </option>
                                                         <?php endforeach; ?>
@@ -727,7 +764,16 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                                                     </button>
                                                 </div>
                                             </td>
-                                            <td><input type="text" name="items[0][description]" class="item-description"></td>
+                                            <td>
+                                                <input type="text" name="items[0][description]" class="item-description" placeholder="Description">
+                                            </td>
+                                            <td>
+                                                <div class="tracking-info">
+                                                    <input type="text" name="items[0][serial_number]" class="item-serial" placeholder="Serial/IMEI" style="display: none;">
+                                                    <input type="text" name="items[0][warranty_period]" class="item-warranty" placeholder="Warranty" style="display: none;">
+                                                    <input type="date" name="items[0][expiry_date]" class="item-expiry" style="display: none;" title="Expiry Date">
+                                                </div>
+                                            </td>
                                             <td><input type="number" name="items[0][quantity]" class="item-quantity" value="1" step="0.01" min="0" onchange="calculateRow(this)" required></td>
                                             <td><input type="number" name="items[0][unit_price]" class="item-price" value="0" step="0.01" min="0" onchange="calculateRow(this)" required></td>
                                             <td><input type="number" name="items[0][discount_percent]" class="item-discount" value="0" step="0.01" min="0" max="100" onchange="calculateRow(this)"></td>
@@ -775,13 +821,6 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Form Actions -->
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Create Quotation
-                            </button>
                         </div>
                     </form>
                 </div>

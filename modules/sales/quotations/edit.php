@@ -31,12 +31,12 @@ $quotationItems = $db->fetchAll("
     SELECT qi.*, p.product_code, p.name as product_name 
     FROM quotation_items qi 
     LEFT JOIN products p ON qi.product_id = p.id 
-    WHERE qi.quotation_id = ? AND qi.company_id = ?
-", [$quotationId, $user['company_id']]);
+    WHERE qi.quotation_id = ?
+", [$quotationId]);
 
 // Get customers and products for dropdowns
 $customers = $db->fetchAll("SELECT id, customer_code, company_name FROM customers WHERE is_active = 1 AND company_id = ? ORDER BY company_name", [$user['company_id']]);
-$products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rate FROM products WHERE is_active = 1 AND company_id = ? ORDER BY name", [$user['company_id']]);
+$products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rate, has_serial_number, has_warranty, has_expiry_date FROM products WHERE is_active = 1 AND company_id = ? ORDER BY name", [$user['company_id']]);
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ], 'id = ? AND company_id = ?', [$quotationId, $user['company_id']]);
             
             // Delete existing items and re-insert (simplest way to handle updates)
-            $db->delete('quotation_items', 'quotation_id = ? AND company_id = ?', [$quotationId, $user['company_id']]);
+            $db->delete('quotation_items', 'quotation_id = ?', [$quotationId]);
             
             $subtotal = 0;
             $totalTax = 0;
@@ -89,8 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'quantity' => $quantity,
                         'unit_price' => $unitPrice,
                         'discount_percent' => $discountPercent,
-                        'tax_rate' => $taxRate,
-                        'company_id' => $user['company_id']
+                        'tax_rate' => $taxRate
                     ]);
                 }
             }
@@ -207,18 +206,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Quotation - <?php echo APP_NAME; ?></title>
-    <link rel="stylesheet" href="../../../public/assets/css/style.css?v=<?php echo time(); ?>">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../../../public/assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- JavaScript Files - Load in correct order -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+    
+    <!-- Pass PHP data to JavaScript -->
     <script>
-        // Pass PHP data to JS
         window.productsData = <?php echo json_encode($products); ?>;
     </script>
+    
+    <!-- Custom quotations JavaScript -->
     <script src="../../../public/assets/js/modules/sales/quotations.js"></script>
+    
     <style>
         /* Select2 Customization */
         .select2-container .select2-selection--single {
@@ -453,6 +459,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .items-table input[type="number"] {
             text-align: right;
+        }
+
+        /* Column Widths */
+        .col-product { width: 28%; }
+        .col-desc { width: 18%; }
+        .col-tracking { width: 16%; }
+        .col-qty { width: 8%; }
+        .col-price { width: 10%; }
+        .col-disc { width: 8%; }
+        .col-tax { width: 8%; }
+        .col-total { width: 10%; }
+        .col-action { width: 4%; }
+
+        /* Tracking Info */
+        .tracking-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.375rem;
+        }
+
+        .tracking-info input {
+            font-size: 0.8125rem !important;
         }
 
         /* Action Buttons */
@@ -770,29 +798,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="invoice-form">
                     <!-- Header -->
                     <div class="invoice-header">
-                        <h2><i class="fas fa-file-invoice"></i> Quotation #<?php echo htmlspecialchars($quotation['quotation_number']); ?></h2>
-                        <a href="index.php" class="btn" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">
-                            <i class="fas fa-arrow-left"></i> Back
-                        </a>
+                        <h2><i class="fas fa-edit"></i> Edit Quotation #<?php echo htmlspecialchars($quotation['quotation_number']); ?></h2>
+                        <div style="display: flex; gap: 10px;">
+                            <a href="view.php?id=<?php echo $quotationId; ?>" target="_blank" class="btn" style="background: rgba(255,255,255,0.2); color: white;">
+                                <i class="fas fa-print"></i> Print
+                            </a>
+                            <a href="index.php" class="btn" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                        </div>
                     </div>
                     
                     <!-- Action Bar -->
                     <div class="action-bar">
-                        <form method="POST" style="display: inline;">
+                        <form method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to convert this quotation to an invoice?');">
                             <input type="hidden" name="action" value="convert_to_invoice">
-                            <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to convert this quotation to an invoice?')">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-file-invoice-dollar"></i> Convert to Invoice
                             </button>
                         </form>
                         
-                        <form method="POST" style="display: inline;">
+                        <form method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to convert this quotation to a sales order?');">
                             <input type="hidden" name="action" value="convert_to_sales_order">
-                            <button type="submit" class="btn btn-secondary" onclick="return confirm('Are you sure you want to convert this quotation to a sales order?')">
+                            <button type="submit" class="btn btn-secondary">
                                 <i class="fas fa-shopping-cart"></i> Convert to Sales Order
                             </button>
                         </form>
                         
-                        <button type="button" class="btn btn-warning" onclick="alert('Work Order conversion coming soon!')">
+                        <button type="button" class="btn btn-warning" onclick="showWorkOrderMessage()">
                             <i class="fas fa-tools"></i> Convert to Work Order
                         </button>
                         
@@ -800,6 +833,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <i class="fas fa-print"></i> Print Quotation
                         </a>
                     </div>
+                    
+                    <script>
+                        function showWorkOrderMessage() {
+                            alert('Work Order conversion coming soon!');
+                        }
+                    </script>
                     
                     <form method="POST" id="quotationForm">
                         <input type="hidden" name="action" value="update_quotation">
@@ -850,14 +889,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <table class="items-table" id="itemsTable">
                                     <thead>
                                         <tr>
-                                            <th style="width: 30%;">Product</th>
-                                            <th style="width: 20%;">Description</th>
-                                            <th style="width: 8%;">Qty</th>
-                                            <th style="width: 10%;">Price</th>
-                                            <th style="width: 8%;">Disc %</th>
-                                            <th style="width: 8%;">Tax %</th>
-                                            <th style="width: 10%;">Total</th>
-                                            <th style="width: 6%;"></th>
+                                            <th class="col-product">Product</th>
+                                            <th class="col-desc">Description</th>
+                                            <th class="col-tracking">Tracking Info</th>
+                                            <th class="col-qty">Qty</th>
+                                            <th class="col-price">Unit Price</th>
+                                            <th class="col-disc">Disc %</th>
+                                            <th class="col-tax">Tax %</th>
+                                            <th class="col-total">Total</th>
+                                            <th class="col-action"></th>
                                         </tr>
                                     </thead>
                                     <tbody id="itemsBody">
@@ -872,6 +912,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                                     data-price="<?php echo $product['selling_price']; ?>"
                                                                     data-tax="<?php echo $product['tax_rate']; ?>"
                                                                     data-name="<?php echo htmlspecialchars($product['name']); ?>"
+                                                                    data-has-serial="<?php echo $product['has_serial_number'] ?? 0; ?>"
+                                                                    data-has-warranty="<?php echo $product['has_warranty'] ?? 0; ?>"
+                                                                    data-has-expiry="<?php echo $product['has_expiry_date'] ?? 0; ?>"
                                                                     <?php echo $product['id'] == $item['product_id'] ? 'selected' : ''; ?>>
                                                                 <?php echo htmlspecialchars($product['product_code'] . ' - ' . $product['name']); ?>
                                                             </option>
@@ -882,7 +925,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     </button>
                                                 </div>
                                                 </td>
-                                                <td><input type="text" name="items[<?php echo $index; ?>][description]" class="item-description" value="<?php echo htmlspecialchars($item['description']); ?>"></td>
+                                                <td><input type="text" name="items[<?php echo $index; ?>][description]" class="item-description" value="<?php echo htmlspecialchars($item['description']); ?>" placeholder="Description"></td>
+                                                <td>
+                                                    <div class="tracking-info">
+                                                        <input type="text" name="items[<?php echo $index; ?>][serial_number]" class="item-serial" placeholder="Serial/IMEI" style="display: none;" value="<?php echo htmlspecialchars($item['serial_number'] ?? ''); ?>">
+                                                        <input type="text" name="items[<?php echo $index; ?>][warranty_period]" class="item-warranty" placeholder="Warranty" style="display: none;" value="<?php echo htmlspecialchars($item['warranty_period'] ?? ''); ?>">
+                                                        <input type="date" name="items[<?php echo $index; ?>][expiry_date]" class="item-expiry" style="display: none;" title="Expiry Date" value="<?php echo $item['expiry_date'] ?? ''; ?>">
+                                                    </div>
+                                                </td>
                                                 <td><input type="number" name="items[<?php echo $index; ?>][quantity]" class="item-quantity" value="<?php echo $item['quantity']; ?>" step="0.01" min="0" onchange="calculateRow(this)" required></td>
                                                 <td><input type="number" name="items[<?php echo $index; ?>][unit_price]" class="item-price" value="<?php echo $item['unit_price']; ?>" step="0.01" min="0" onchange="calculateRow(this)" required></td>
                                                 <td><input type="number" name="items[<?php echo $index; ?>][discount_percent]" class="item-discount" value="<?php echo $item['discount_percent']; ?>" step="0.01" min="0" max="100" onchange="calculateRow(this)"></td>
@@ -1063,11 +1113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
+        // Initialize row index for dynamic row addition
         window.rowIndex = <?php echo count($quotationItems); ?>;
-        // We need to parse the PHP products array into a JS variable that we can update
-        window.productsData = <?php echo json_encode($products); ?>;
     </script>
-    <script src="../../../public/assets/js/modules/sales/quotations.js"></script>
+            </div>
+        </main>
     </div>
 </body>
 </html>
