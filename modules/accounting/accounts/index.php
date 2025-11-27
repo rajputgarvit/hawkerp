@@ -119,8 +119,8 @@ $accountTypes = $db->fetchAll("SELECT * FROM account_types ORDER BY category, na
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <a href="edit.php?id=<?php echo $account['id']; ?>" class="btn btn-sm" style="background: var(--primary-color); color: white;" title="Edit Account">
-                                                    <i class="fas fa-edit"></i>
+                                                <a href="edit.php?id=<?php echo $account['id']; ?>" class="btn-icon edit" title="Edit Account">
+                                                    <i class="fas fa-pen"></i>
                                                 </a>
                                             </td>
                                         </tr>

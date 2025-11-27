@@ -108,13 +108,12 @@ $entries = $db->fetchAll("
                                                 </span>
                                             </td>
                                             <td>
+                                                <a href="view.php?id=<?php echo $entry['id']; ?>" class="btn-icon view" title="View Entry">
+                                                    <i class="fas fa-file-alt"></i>
+                                                </a>
                                                 <?php if ($entry['status'] === 'Draft'): ?>
-                                                    <a href="edit.php?id=<?php echo $entry['id']; ?>" class="btn btn-sm" style="background: var(--primary-color); color: white;" title="Edit Entry">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                <?php else: ?>
-                                                    <a href="view.php?id=<?php echo $entry['id']; ?>" class="btn btn-sm" style="background: var(--info-color); color: white;" title="View Entry">
-                                                        <i class="fas fa-eye"></i>
+                                                    <a href="edit.php?id=<?php echo $entry['id']; ?>" class="btn-icon edit" title="Edit Entry">
+                                                        <i class="fas fa-pen"></i>
                                                     </a>
                                                 <?php endif; ?>
                                             </td>

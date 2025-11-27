@@ -12,7 +12,7 @@ $user = $auth->getCurrentUser();
 $user = $auth->getCurrentUser();
 
 // Get fiscal years
-$fiscalYears = $db->fetchAll("SELECT * FROM fiscal_years WHERE company_id = ? ORDER BY start_date DESC", [$user['company_id']]);
+$fiscalYears = $db->fetchAll("SELECT * FROM fiscal_years ORDER BY start_date DESC");
 
 // Get selected fiscal year or current
 $selectedFiscalYear = $_GET['fiscal_year'] ?? null;

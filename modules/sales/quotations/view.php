@@ -45,8 +45,8 @@ $quotation = $db->fetchOne("
     FROM quotations q
     JOIN customers c ON q.customer_id = c.id
     LEFT JOIN customer_addresses ca ON c.id = ca.customer_id AND ca.is_default = 1
-    WHERE q.id = ? AND q.company_id = ?
-", [$quotationId, $user['company_id']]);
+    WHERE q.id = ?
+", [$quotationId]);
 
 if (!$quotation) {
     header('Location: index.php');

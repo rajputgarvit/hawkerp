@@ -82,9 +82,9 @@ $warehouses = $db->fetchAll("
                                                 <span class="badge badge-success">Active</span>
                                             </td>
                                             <td>
-                                                <button class="btn btn-sm" style="background: var(--primary-color); color: white;">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
+                                                <a href="view.php?id=<?php echo $wh['id']; ?>" class="btn-icon view" title="View Warehouse">
+                                                    <i class="fas fa-file-alt"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

@@ -45,8 +45,8 @@ $order = $db->fetchOne("
     FROM sales_orders q
     JOIN customers c ON q.customer_id = c.id
     LEFT JOIN customer_addresses ca ON c.id = ca.customer_id AND ca.is_default = 1
-    WHERE q.id = ? AND q.company_id = ?
-", [$orderId, $user['company_id']]);
+    WHERE q.id = ?
+", [$orderId]);
 
 if (!$order) {
     header('Location: index.php');

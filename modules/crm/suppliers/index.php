@@ -88,9 +88,15 @@ $suppliers = $db->fetchAll("
                                             <td><?php echo number_format($supplier['total_orders']); ?></td>
                                             <td>₹<?php echo number_format($supplier['total_purchases'], 2); ?></td>
                                             <td>
-                                                <button class="btn btn-sm" style="background: var(--primary-color); color: white;">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
+                                                <a href="view.php?id=<?php echo $supplier['id']; ?>" class="btn-icon view" title="View Supplier">
+                                                    <i class="fas fa-file-alt"></i>
+                                                </a>
+                                                <a href="edit.php?id=<?php echo $supplier['id']; ?>" class="btn-icon edit" title="Edit Supplier">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                                <a href="delete.php?id=<?php echo $supplier['id']; ?>" class="btn-icon delete" title="Delete Supplier" onclick="return confirm('Are you sure you want to delete this supplier?');">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

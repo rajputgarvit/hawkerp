@@ -11,7 +11,7 @@ $db = Database::getInstance();
 $user = $auth->getCurrentUser();
 
 // Fetch all fiscal years
-$fiscalYears = $db->fetchAll("SELECT * FROM fiscal_years WHERE company_id = ? ORDER BY start_date DESC", [$user['company_id']]);
+$fiscalYears = $db->fetchAll("SELECT * FROM fiscal_years ORDER BY start_date DESC");
 ?>
 <!DOCTYPE html>
 <html lang="en">

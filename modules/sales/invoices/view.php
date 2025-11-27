@@ -49,8 +49,8 @@ $invoice = $db->fetchOne("
     FROM invoices i
     JOIN customers c ON i.customer_id = c.id
     LEFT JOIN customer_addresses ca ON c.id = ca.customer_id AND ca.is_default = 1
-    WHERE i.id = ? AND i.company_id = ?
-", [$invoiceId, $user['company_id']]);
+    WHERE i.id = ?
+", [$invoiceId]);
 
 if (!$invoice) {
     header('Location: index');

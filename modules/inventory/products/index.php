@@ -91,9 +91,9 @@ $products = $db->fetchAll("
                                                 <a href="edit.php?id=<?php echo $product['id']; ?>" class="btn-icon edit" title="Edit Product">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
-                                                <button class="btn-icon delete" onclick="return deleteProduct(<?php echo $product['id']; ?>, this);" title="Delete Product">
+                                                <a href="#" onclick="return deleteProduct(<?php echo $product['id']; ?>, this);" class="btn-icon delete" title="Delete Product">
                                                     <i class="fas fa-trash-alt"></i>
-                                                </button>
+                                                </a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

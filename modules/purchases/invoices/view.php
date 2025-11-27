@@ -19,7 +19,7 @@ if (!$invoiceId) {
 }
 
 // Fetch company settings
-$companySettings = $db->fetchOne("SELECT * FROM company_settings WHERE company_id = ? ORDER BY id DESC LIMIT 1", [$user['company_id']]);
+$companySettings = $db->fetchOne("SELECT * FROM company_settings WHERE id = ?", [$user['company_id']]);
 
 if (!$companySettings) {
     // Default fallback if no settings found
@@ -48,8 +48,8 @@ $invoice = $db->fetchOne("
     FROM purchase_invoices i
     JOIN suppliers c ON i.supplier_id = c.id
     LEFT JOIN supplier_addresses ca ON c.id = ca.supplier_id AND ca.is_default = 1
-    WHERE i.id = ? AND i.company_id = ?
-", [$invoiceId, $user['company_id']]);
+    WHERE i.id = ?
+", [$invoiceId]);
 
 if (!$invoice) {
     header('Location: index.php');

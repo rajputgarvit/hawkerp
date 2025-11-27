@@ -111,9 +111,9 @@ $leaves = $db->fetchAll("
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                 <?php else: ?>
-                                                    <button class="btn btn-sm" style="background: var(--primary-color); color: white;">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
+                                                    <a href="view.php?id=<?php echo $leave['id']; ?>" class="btn-icon view" title="View Application">
+                                                        <i class="fas fa-file-alt"></i>
+                                                    </a>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>

@@ -99,9 +99,9 @@ $payroll = $db->fetchAll("
                                             </td>
                                             <td><?php echo $record['payment_date'] ? date('d M Y', strtotime($record['payment_date'])) : '-'; ?></td>
                                             <td>
-                                                <button class="btn btn-sm" style="background: var(--primary-color); color: white;">
-                                                    <i class="fas fa-file-invoice-dollar"></i>
-                                                </button>
+                                                <a href="view.php?id=<?php echo $record['id']; ?>" class="btn-icon view" title="View Payslip">
+                                                    <i class="fas fa-file-alt"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
