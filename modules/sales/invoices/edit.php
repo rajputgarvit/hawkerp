@@ -767,12 +767,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                         <span>₹<?php echo number_format($invoice['subtotal'], 2); ?></span>
                                     </div>
                                     <div class="total-row">
-                                        <label>Tax</label>
-                                        <span>₹<?php echo number_format($invoice['tax_amount'], 2); ?></span>
+                                        <label>Discount</label>
+                                        <span>-₹<?php echo number_format($invoice['discount_amount'], 2); ?></span>
                                     </div>
                                     <div class="total-row">
-                                        <label>Discount</label>
-                                        <span>₹<?php echo number_format($invoice['discount_amount'], 2); ?></span>
+                                        <label>Tax Amount</label>
+                                        <span>₹<?php echo number_format($invoice['tax_amount'], 2); ?></span>
                                     </div>
                                     <div class="total-row grand-total-row">
                                         <label>Grand Total</label>
