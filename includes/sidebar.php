@@ -7,7 +7,6 @@ if (!isset($brandingSettings)) {
 $appName = !empty($brandingSettings['app_name']) ? $brandingSettings['app_name'] : APP_NAME;
 $logoPath = !empty($brandingSettings['logo_path']) ? BASE_URL . $brandingSettings['logo_path'] : '';
 ?>
-<?php if (!isset($_SERVER['HTTP_X_SPA_REQUEST']) || $_SERVER['HTTP_X_SPA_REQUEST'] !== 'true'): ?>
 <aside class="sidebar">
     <div class="sidebar-header">
         <h2 style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
@@ -238,5 +237,3 @@ $logoPath = !empty($brandingSettings['logo_path']) ? BASE_URL . $brandingSetting
 </style>
 <?php endif; ?>
     <script src="<?php echo BASE_URL; ?>public/assets/js/script.js"></script>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/spa.js?v=<?php echo time(); ?>"></script>
-<?php endif; ?>

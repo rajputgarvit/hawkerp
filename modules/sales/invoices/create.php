@@ -204,6 +204,7 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
             border-radius: 12px;
             box-shadow: var(--shadow-md);
             overflow: hidden;
+            width: 100%;
         }
 
         /* Header Section */

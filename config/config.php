@@ -1,9 +1,9 @@
 <?php
 // Database Configuration
-define('DB_HOST', 'mysql.gb.stackcp.com:41638t');
-define('DB_USER', 'garviterp');
-define('DB_PASS', 'garviterp123');
-define('DB_NAME', 'garviterp-353034391dd2');
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'tiger_erp');
 
 // Application Configuration
 define('APP_NAME', 'Hawk ERP');
