@@ -6,8 +6,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // Sidebar Toggle Logic
     if (sidebarToggle) {
         sidebarToggle.addEventListener('click', function () {
+            console.log('Sidebar toggle clicked');
             document.body.classList.toggle('sidebar-is-collapsed');
             const isCollapsed = document.body.classList.contains('sidebar-is-collapsed');
+            console.log('Sidebar collapsed state:', isCollapsed);
             localStorage.setItem('sidebarCollapsed', isCollapsed);
         });
     }
