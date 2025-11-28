@@ -7,6 +7,9 @@ if (!isset($brandingSettings)) {
 $appName = !empty($brandingSettings['app_name']) ? $brandingSettings['app_name'] : APP_NAME;
 $logoPath = !empty($brandingSettings['logo_path']) ? BASE_URL . $brandingSettings['logo_path'] : '';
 ?>
+<head>
+    <script src="<?php echo BASE_URL; ?>public/assets/js/script.js?v=<?php echo time(); ?>"></script>
+</head>
 <aside class="sidebar">
     <script>
         // Prevent FOUC by applying class immediately if collapsed
@@ -245,4 +248,3 @@ $logoPath = !empty($brandingSettings['logo_path']) ? BASE_URL . $brandingSetting
     }
 </style>
 <?php endif; ?>
-<script src="<?php echo BASE_URL; ?>public/assets/js/script.js?v=<?php echo time(); ?>"></script>
