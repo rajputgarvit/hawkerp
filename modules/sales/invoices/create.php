@@ -174,7 +174,7 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../../../public/assets/js/modules/sales/invoices.js"></script>
+    <script src="../../../public/assets/js/modules/sales/invoices.js?v=<?php echo time(); ?>"></script>
     <style>
         /* Professional Invoice Layout */
         :root {
@@ -324,7 +324,9 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
             border-bottom: 2px solid var(--border-color);
             white-space: nowrap;
         }
-
+        .item-description{
+            display: none;
+        }
         .items-table td {
             padding: 0.75rem 1rem;
             border-bottom: 1px solid #f1f5f9;
@@ -368,15 +370,14 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
         }
 
         /* Column Widths */
-        .col-product { width: 28%; }
-        .col-desc { width: 18%; }
-        .col-tracking { width: 16%; }
+        .col-product { width: 30%; }
+        .col-tracking { width: 15%; }
         .col-qty { width: 8%; }
-        .col-price { width: 10%; }
-        .col-disc { width: 8%; }
-        .col-tax { width: 8%; }
-        .col-total { width: 10%; }
-        .col-action { width: 4%; }
+        .col-price { width: 12%; }
+        .col-disc { width: 10%; }
+        .col-tax { width: 10%; }
+        .col-total { width: 12%; }
+        .col-action { width: 3%; }
 
         /* Action Buttons */
         .btn {
@@ -736,7 +737,6 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                                     <thead>
                                         <tr>
                                             <th class="col-product">Product</th>
-                                            <th class="col-desc">Description</th>
                                             <th class="col-tracking">Tracking Info</th>
                                             <th class="col-qty">Qty</th>
                                             <th class="col-price">Unit Price</th>
@@ -767,10 +767,8 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                                                     <button type="button" class="btn btn-success" onclick="openQuickAddModal()" title="Quick Add Product">
                                                         <i class="fas fa-plus"></i>
                                                     </button>
+                                                    <input type="hidden" name="items[0][description]" class="item-description">
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <input type="text" name="items[0][description]" class="item-description" placeholder="Description">
                                             </td>
                                             <td>
                                                 <div class="tracking-info">

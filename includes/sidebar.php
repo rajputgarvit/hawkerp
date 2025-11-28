@@ -8,8 +8,14 @@ $appName = !empty($brandingSettings['app_name']) ? $brandingSettings['app_name']
 $logoPath = !empty($brandingSettings['logo_path']) ? BASE_URL . $brandingSettings['logo_path'] : '';
 ?>
 <aside class="sidebar">
-    <div class="sidebar-header">
-        <h2 style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+    <script>
+        // Prevent FOUC by applying class immediately if collapsed
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.body.classList.add('sidebar-is-collapsed');
+        }
+    </script>
+    <div class="sidebar-header" style="position: relative;">
+        <h2 style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%;">
             <?php if ($logoPath): ?>
                 <img id="sidebar-logo" src="<?php echo $logoPath; ?>" alt="Logo" style="max-height: 50px; vertical-align: middle;">
             <?php else: ?>
@@ -17,6 +23,9 @@ $logoPath = !empty($brandingSettings['logo_path']) ? BASE_URL . $brandingSetting
             <?php endif; ?>
             <span id="sidebar-app-name" style="font-size: 18px;"><?php echo htmlspecialchars($appName); ?></span>
         </h2>
+        <button id="sidebarToggle" style="position: absolute; right: 10px; top: 10px; background: none; border: none; color: white; cursor: pointer; opacity: 0.7;">
+            <i class="fas fa-bars"></i>
+        </button>
     </div>
     
     <nav class="sidebar-menu">
@@ -236,4 +245,4 @@ $logoPath = !empty($brandingSettings['logo_path']) ? BASE_URL . $brandingSetting
     }
 </style>
 <?php endif; ?>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/script.js"></script>
+<script src="<?php echo BASE_URL; ?>public/assets/js/script.js?v=<?php echo time(); ?>"></script>

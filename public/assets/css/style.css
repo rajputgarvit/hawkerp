@@ -705,3 +705,78 @@ th {
 .alert-toast-close:hover {
     opacity: 1;
 }
+
+/* Collapsed Sidebar Styles */
+body.sidebar-is-collapsed .sidebar {
+    width: 60px;
+}
+
+body.sidebar-is-collapsed .main-content {
+    margin-left: 60px;
+}
+
+body.sidebar-is-collapsed .sidebar-header h2 {
+    display: none !important;
+}
+
+body.sidebar-is-collapsed .menu-section-title {
+    display: none;
+}
+
+body.sidebar-is-collapsed .menu-item span {
+    display: none;
+}
+
+body.sidebar-is-collapsed .menu-item {
+    padding: 0.75rem;
+    justify-content: center;
+    position: relative;
+}
+
+body.sidebar-is-collapsed .menu-item i {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+/* Hide Scrollbar */
+.sidebar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Custom Tooltip Styles */
+.custom-tooltip {
+    position: fixed;
+    background-color: #1e293b;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    white-space: nowrap;
+    opacity: 0;
+    animation: tooltipFadeIn 0.2s forwards;
+}
+
+.custom-tooltip::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #1e293b transparent transparent;
+}
+
+@keyframes tooltipFadeIn {
+    to {
+        opacity: 1;
+    }
+}

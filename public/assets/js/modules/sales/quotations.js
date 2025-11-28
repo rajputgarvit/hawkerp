@@ -12,14 +12,7 @@ if (typeof window.rowIndex === 'undefined') {
 window.updateAllProductDropdowns = function () {
     const selects = document.querySelectorAll('.product-select');
     selects.forEach(select => {
-        // Handle Select2 if initialized
-        const $select = $(select);
         const currentValue = select.value;
-        const isSelect2 = $select.hasClass("select2-hidden-accessible");
-
-        if (isSelect2) {
-            $select.select2('destroy');
-        }
 
         // Clear existing options except the first one
         while (select.options.length > 1) {
@@ -44,15 +37,6 @@ window.updateAllProductDropdowns = function () {
         }
         // Restore selected value if it still exists
         select.value = currentValue;
-
-        // Re-initialize Select2
-        if (isSelect2 || $(select).hasClass('product-select')) {
-            $select.select2({
-                placeholder: "Select Product",
-                allowClear: true,
-                width: '100%'
-            });
-        }
     });
 }
 
@@ -88,15 +72,6 @@ window.onclick = function (event) {
 
 // Initialize function to set up event listeners
 function initializeQuotationForm() {
-    // Initialize Select2
-    if (typeof $ !== 'undefined' && $.fn.select2) {
-        $('.product-select').select2({
-            placeholder: "Select Product",
-            allowClear: true,
-            width: '100%'
-        });
-    }
-
     // Handle Quick Add Product Form Submission
     const quickAddProductForm = document.getElementById('quickAddProductForm');
     if (quickAddProductForm) {
@@ -256,15 +231,6 @@ window.addRow = function () {
 
         tbody.appendChild(newRow);
 
-        // Initialize Select2 on the new row's select
-        if (typeof $ !== 'undefined' && $.fn.select2) {
-            $(newRow).find('.product-select').select2({
-                placeholder: "Select Product",
-                allowClear: true,
-                width: '100%'
-            });
-        }
-
         console.log('Row added successfully, new rowIndex:', rowIndex);
         rowIndex++;
 
@@ -296,19 +262,30 @@ window.updateProductDetails = function (select, index) {
 
         row.querySelector('.item-price').value = price;
         row.querySelector('.item-tax').value = tax;
-        row.querySelector('.item-description').value = name;
+        
+        const descriptionInput = row.querySelector('.item-description');
+        if (descriptionInput) {
+            descriptionInput.value = name;
+        }
+        
         calculateRow(select);
     }
 }
 
 window.calculateRow = function (element) {
+    console.log('calculateRow called', element);
     const row = element.closest('tr');
-    if (!row) return; // Safety check
+    if (!row) {
+        console.error('Row not found');
+        return; 
+    }
 
     const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
     const price = parseFloat(row.querySelector('.item-price').value) || 0;
     const discountPercent = parseFloat(row.querySelector('.item-discount').value) || 0;
     const taxRate = parseFloat(row.querySelector('.item-tax').value) || 0;
+
+    console.log('Row values:', { quantity, price, discountPercent, taxRate });
 
     const subtotal = quantity * price;
     const discountAmount = subtotal * (discountPercent / 100);
@@ -316,7 +293,12 @@ window.calculateRow = function (element) {
     const taxAmount = afterDiscount * (taxRate / 100);
     const total = afterDiscount + taxAmount;
 
-    row.querySelector('.item-total').value = total.toFixed(2);
+    const totalInput = row.querySelector('.item-total');
+    if (totalInput) {
+        totalInput.value = total.toFixed(2);
+    } else {
+        console.error('Total input not found');
+    }
 
     calculateTotals();
 }

@@ -279,7 +279,10 @@ window.updateProductDetails = function(select, index) {
     if (option.value) {
         row.querySelector('.item-price').value = option.dataset.price || 0;
         row.querySelector('.item-tax').value = option.dataset.tax || 0;
-        row.querySelector('.item-description').value = option.dataset.name || '';
+        const descriptionInput = row.querySelector('.item-description');
+        if (descriptionInput) {
+            descriptionInput.value = option.dataset.name || '';
+        }
         
         // Toggle tracking fields
         const serialInput = row.querySelector('.item-serial');
@@ -319,14 +322,20 @@ window.updateProductDetails = function(select, index) {
 }
 
 window.calculateRow = function(element) {
+    console.log('calculateRow called', element);
     const row = element.closest('tr');
-    if (!row) return; // Safety check
+    if (!row) {
+        console.error('Row not found');
+        return; 
+    }
     
     const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
     const price = parseFloat(row.querySelector('.item-price').value) || 0;
     const discountPercent = parseFloat(row.querySelector('.item-discount').value) || 0;
     const taxRate = parseFloat(row.querySelector('.item-tax').value) || 0;
     
+    console.log('Row values:', { quantity, price, discountPercent, taxRate });
+
     // Inclusive Pricing Logic
     const grossTotal = quantity * price;
     const discountAmount = grossTotal * (discountPercent / 100);
@@ -337,17 +346,26 @@ window.calculateRow = function(element) {
     const taxAmount = netTotal - taxableValue;
     
     // Display Total (Inclusive)
-    row.querySelector('.item-total').value = netTotal.toFixed(2);
+    const totalInput = row.querySelector('.item-total');
+    if (totalInput) {
+        totalInput.value = netTotal.toFixed(2);
+    } else {
+        console.error('Total input not found');
+    }
     
     calculateTotals();
 }
 
 window.calculateTotals = function() {
+    console.log('calculateTotals called');
     let subtotal = 0; // Taxable Subtotal
     let totalTax = 0;
     let totalItemDiscount = 0;
     
-    document.querySelectorAll('.item-row').forEach((row, index) => {
+    const rows = document.querySelectorAll('.item-row');
+    console.log('Found rows:', rows.length);
+
+    rows.forEach((row, index) => {
         const quantity = parseFloat(row.querySelector('.item-quantity').value) || 0;
         const price = parseFloat(row.querySelector('.item-price').value) || 0;
         const discountPercent = parseFloat(row.querySelector('.item-discount').value) || 0;
@@ -379,10 +397,15 @@ window.calculateTotals = function() {
     
     const totalDiscount = totalItemDiscount + additionalDiscount;
     
-    document.getElementById('subtotalDisplay').textContent = '₹' + subtotal.toFixed(2);
-    document.getElementById('taxDisplay').textContent = '₹' + totalTax.toFixed(2);
-    document.getElementById('discountDisplay').textContent = '₹' + totalItemDiscount.toFixed(2);
-    document.getElementById('grandTotalDisplay').textContent = '₹' + (subtotal + totalTax - additionalDiscount).toFixed(2);
+    const subtotalDisplay = document.getElementById('subtotalDisplay');
+    const taxDisplay = document.getElementById('taxDisplay');
+    const discountDisplay = document.getElementById('discountDisplay');
+    const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+
+    if (subtotalDisplay) subtotalDisplay.textContent = '₹' + subtotal.toFixed(2);
+    if (taxDisplay) taxDisplay.textContent = '₹' + totalTax.toFixed(2);
+    if (discountDisplay) discountDisplay.textContent = '₹' + totalItemDiscount.toFixed(2);
+    if (grandTotalDisplay) grandTotalDisplay.textContent = '₹' + (subtotal + totalTax - additionalDiscount).toFixed(2);
 }
 
 window.checkSerialAvailability = function(input, excludeInvoiceId = null) {

@@ -115,11 +115,9 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
     <link rel="stylesheet" href="../../../public/assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     
     <!-- JavaScript Files - Load in correct order -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
     <!-- Pass PHP data to JavaScript -->
     <script>
@@ -127,37 +125,9 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
     </script>
     
     <!-- Custom quotations JavaScript -->
-    <script src="../../../public/assets/js/modules/sales/quotations.js"></script>
+    <script src="../../../public/assets/js/modules/sales/quotations.js?v=<?php echo time(); ?>"></script>
     
     <style>
-        /* Select2 Customization */
-        .select2-container .select2-selection--single {
-            height: 42px;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            background: white;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 40px;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 42px;
-            padding-left: 12px;
-            color: var(--text-primary);
-            font-size: 0.9375rem;
-        }
-        .select2-container--default .select2-search--dropdown .select2-search__field {
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 8px;
-        }
-        .select2-dropdown {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow-lg);
-        }
 
         /* Professional Invoice Layout */
         :root {
@@ -355,15 +325,14 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
         }
 
         /* Column Widths */
-        .col-product { width: 28%; }
-        .col-desc { width: 18%; }
-        .col-tracking { width: 16%; }
+        .col-product { width: 30%; }
+        .col-tracking { width: 15%; }
         .col-qty { width: 8%; }
-        .col-price { width: 10%; }
-        .col-disc { width: 8%; }
-        .col-tax { width: 8%; }
-        .col-total { width: 10%; }
-        .col-action { width: 4%; }
+        .col-price { width: 12%; }
+        .col-disc { width: 10%; }
+        .col-tax { width: 10%; }
+        .col-total { width: 12%; }
+        .col-action { width: 3%; }
 
         /* Tracking Info */
         .tracking-info {
@@ -523,13 +492,13 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
             border-bottom: none;
         }
 
-        .total-row label, .total-row span:first-child {
+        .total-row label {
             font-size: 0.9375rem;
             color: var(--text-secondary);
             font-weight: 500;
         }
 
-        .total-row span:last-child {
+        .total-row span {
             font-size: 1rem;
             font-weight: 600;
             color: var(--text-primary);
@@ -667,7 +636,7 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
             
             <div class="content-area">
                 <?php if (isset($error)): ?>
-                    <div class="alert alert-danger" style="margin-bottom: 20px; padding: 15px; background: #fee2e2; color: #991b1b; border-radius: 8px;">
+                    <div class="alert alert-danger">
                         <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
                     </div>
                 <?php endif; ?>
@@ -675,7 +644,7 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                 <div class="invoice-form">
                     <!-- Header -->
                     <div class="invoice-header">
-                        <h2><i class="fas fa-file-invoice"></i> Create New Quotation</h2>
+                        <h2><i class="fas fa-file-invoice-dollar"></i> Create New Quotation</h2>
                         <div style="display: flex; gap: 10px;">
                             <button type="submit" form="quotationForm" class="btn" style="background: white; color: var(--primary-color); font-weight: bold;">
                                 <i class="fas fa-save"></i> Create Quotation
@@ -686,10 +655,10 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                         </div>
                     </div>
                     
-                    <form method="POST" id="quotationForm">
+                    <form method="POST" id="quotationForm" action="create">
                         <input type="hidden" name="action" value="create_quotation">
                         
-                        <!-- Form Grid -->
+                        <!-- Quotation Details Grid -->
                         <div class="form-grid">
                             <div class="form-field">
                                 <label>Quotation Number *</label>
@@ -732,7 +701,6 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                                     <thead>
                                         <tr>
                                             <th class="col-product">Product</th>
-                                            <th class="col-desc">Description</th>
                                             <th class="col-tracking">Tracking Info</th>
                                             <th class="col-qty">Qty</th>
                                             <th class="col-price">Unit Price</th>
@@ -763,10 +731,8 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
                                                     <button type="button" class="btn btn-success" style="width: 38px; height: 38px; padding: 0;" onclick="openQuickAddModal()" title="Quick Add Product">
                                                         <i class="fas fa-plus"></i>
                                                     </button>
+                                                    <input type="hidden" name="items[0][description]" class="item-description">
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <input type="text" name="items[0][description]" class="item-description" placeholder="Description">
                                             </td>
                                             <td>
                                                 <div class="tracking-info">
