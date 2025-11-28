@@ -170,7 +170,7 @@ $products = $db->fetchAll("SELECT id, product_code, name, selling_price, tax_rat
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Invoice - <?php echo APP_NAME; ?></title>
-    <link rel="stylesheet" href="../../../public/assets/css/style.css">
+    <link rel="stylesheet" href="../../../public/assets/css/style.css?v=<?php echo time(); ?>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
