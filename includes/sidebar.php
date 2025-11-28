@@ -7,9 +7,9 @@ if (!isset($brandingSettings)) {
 $appName = !empty($brandingSettings['app_name']) ? $brandingSettings['app_name'] : APP_NAME;
 $logoPath = !empty($brandingSettings['logo_path']) ? BASE_URL . $brandingSettings['logo_path'] : '';
 ?>
-<head>
-    <script src="<?php echo BASE_URL; ?>public/assets/js/script.js?v=<?php echo time(); ?>"></script>
-</head>
+<!-- Global Assets included via Sidebar -->
+<link rel="stylesheet" href="<?php echo BASE_URL; ?>public/assets/css/style.css?v=<?php echo time(); ?>">
+<script src="<?php echo BASE_URL; ?>public/assets/js/script.js?v=<?php echo time(); ?>"></script>
 <aside class="sidebar">
     <script>
         // Prevent FOUC by applying class immediately if collapsed
